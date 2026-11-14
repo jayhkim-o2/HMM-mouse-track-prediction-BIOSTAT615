@@ -25,3 +25,4 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 ## Work log
 
 - 2026-11-14: Project folder set up with SPEC.md, CLAUDE.md, agent skill and prototypes.
+- 2026-11-14: Owner set Pages source to GitHub Actions; deploy ran and the live URL loads. Step 1 marked Working.

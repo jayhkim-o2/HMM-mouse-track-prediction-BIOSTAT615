@@ -30,3 +30,4 @@
 - 2026-11-14: Proof-of-concept page with the full 4-state HMM; in-browser checks (hand-worked
   example, brute force on 500 random models, 2,000-step underflow test) all pass. Set up repo
   folder, CLAUDE.md and agent skill.
+  Follow-up: owner enabled Pages and confirmed the live page loads and the Actions run succeeds.
