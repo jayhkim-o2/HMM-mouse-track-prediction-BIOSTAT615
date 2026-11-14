@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cursor intent predictor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1f4;--surface:#ffffff;--ink:#17233a;--muted:#5b6578;--line:#c9d0da;
+  --c0:#2f6fdb;--c1:#b4316b;--c2:#1f8a5b;--c3:#a86f05;
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1622;--surface:#18212f;--ink:#e6ebf2;--muted:#98a3b5;--line:#2f3a4c;
+    --c0:#6fa0ff;--c1:#e07aa6;--c2:#4cc28b;--c3:#e0b14a;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1622;--surface:#18212f;--ink:#e6ebf2;--muted:#98a3b5;--line:#2f3a4c;
+  --c0:#6fa0ff;--c1:#e07aa6;--c2:#4cc28b;--c3:#e0b14a;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  line-height:1.5;font-variant-numeric:tabular-nums}
+main{max-width:1100px;margin:0 auto;padding:28px 20px 56px}
+h1{font-size:1.8rem;line-height:1.2;margin:0 0 6px;font-weight:700;letter-spacing:-.015em}
+h2{font-size:1.05rem;margin:0 0 10px;font-weight:600}
+.lede{color:var(--muted);margin:0 0 22px;max-width:68ch}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:20px;align-items:start}
+@media (max-width:880px){.layout{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.arena{position:relative;height:min(66vh,560px);min-height:440px;background:var(--surface);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;user-select:none;-webkit-user-select:none}
+#trail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.question{position:absolute;left:0;right:0;top:16px;text-align:center;font-weight:600;font-size:1.15rem;padding:0 16px}
+.options{position:absolute;left:16px;right:16px;top:62px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.opt{--c:var(--c0);border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface);
+  display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:border-color .15s}
+.opt:nth-child(2){--c:var(--c1)}.opt:nth-child(3){--c:var(--c2)}.opt:nth-child(4){--c:var(--c3)}
+.opt .lab{display:flex;gap:8px;align-items:center;font-weight:500;overflow-wrap:anywhere}
+.opt input{accent-color:var(--c);width:18px;height:18px;margin:0;flex:none}
+.opt input:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;width:25%;background:var(--c);transition:width .06s linear}
+.pct{font-size:.85rem;color:var(--muted)}
+.opt.lead{border-color:var(--c)}
+.arena:not([data-state="tracking"]) .opt{cursor:default}
+.arena[data-state="idle"] .opt{opacity:.6}
+#start{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font:inherit;font-weight:600;
+  padding:12px 26px;border-radius:999px;border:0;background:var(--ink);color:var(--surface);cursor:pointer}
+#start:disabled{opacity:.35;cursor:default}
+#start:focus-visible{outline:3px solid var(--c0);outline-offset:3px}
+.hint{position:absolute;left:0;right:0;bottom:78px;text-align:center;color:var(--muted);font-size:.9rem;padding:0 16px}
+label.ctl{display:block;margin:0 0 14px;font-size:.92rem}
+label.ctl span{display:flex;justify-content:space-between}
+label.ctl small{display:block;color:var(--muted);font-size:.8rem;line-height:1.35;margin-top:2px}
+input[type=range]{width:100%;accent-color:var(--ink)}
+.tally{border-collapse:collapse;width:100%;font-size:.92rem}
+.tally td{padding:4px 0;border-top:1px solid var(--line)}
+.tally td:last-child{text-align:right}
+.results{margin-top:20px}
+.chartwrap{overflow-x:auto}
+#chart{display:block;width:100%;height:220px}
+.story{margin:10px 0 0;color:var(--ink)}
+.checks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+@media (max-width:560px){.checks{grid-template-columns:minmax(0,1fr)}}
+.check{border:1px solid var(--line);border-radius:10px;padding:10px}
+.check b{display:block;font-size:.85rem;color:var(--muted);font-weight:500}
+.ok{color:var(--c2)}.no{color:var(--c1)}
+.touch{display:none;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:14px}
+.muted{color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.bar i,.opt{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Which answer is the cursor heading for?</h1>
+  <p class="lede">Press Start, then move to your answer. A hidden Markov model watches each cursor movement and updates the chance you’re aiming at each option, using the forward algorithm in log space. After you click, Viterbi reconstructs your most likely sequence of intentions. Nothing is recorded or sent anywhere.</p>
+  <p class="touch" id="touch">This needs a mouse or trackpad: a touchscreen has no cursor movement before the tap.</p>
+
+  <div class="layout">
+    <div>
+      <div class="arena" id="arena" data-state="idle">
+        <canvas id="trail"></canvas>
+        <div class="question" id="qtext"></div>
+        <div class="options" id="options"></div>
+        <div class="hint" id="hint">Read the question, then press Start and move to your answer.</div>
+        <button id="start" type="button">Start</button>
+      </div>
+    </div>
+
+    <aside class="panel">
+      <h2>Model settings</h2>
+      <label class="ctl"><span>Aim sharpness κ <output id="kapv"></output></span>
+        <input id="kap" type="range" min="0.2" max="6" step="0.1" value="2">
+        <small>How strongly movement direction counts as evidence (von Mises concentration).</small></label>
+      <label class="ctl"><span>Keep same target <output id="stayv"></output></span>
+        <input id="stay" type="range" min="0.80" max="0.999" step="0.001" value="0.98">
+        <small>Chance the intention stays put between samples. Lower lets the model switch faster.</small></label>
+      <label class="ctl"><span>Closeness weight <output id="clov"></output></span>
+        <input id="clo" type="range" min="0" max="3" step="0.1" value="1">
+        <small>How much being near an answer box counts as evidence. Set to 0 to use direction only.</small></label>
+      <p class="muted" style="font-size:.82rem;margin:0 0 14px">Changing a setting after a trial re-runs the model on that trial’s movement.</p>
+      <h2>Prediction before the click</h2>
+      <table class="tally" id="tally"></table>
+      <p class="muted" style="font-size:.82rem;margin:8px 0 0">Chance is 25%.</p>
+    </aside>
+  </div>
+
+  <section class="panel results" id="results" hidden>
+    <h2>How the probabilities evolved</h2>
+    <div class="chartwrap"><canvas id="chart"></canvas></div>
+    <p class="story" id="story"></p>
+    <div class="checks" id="checks"></div>
+  </section>
+</main>
+
+<script>
+const QUESTIONS = [
+  ["Which of these is a prime number?", ["21","27","29","33"]],
+  ["Which planet is closest to the Sun?", ["Venus","Mercury","Earth","Mars"]],
+  ["What is 7 × 8?", ["54","56","58","64"]],
+  ["Which of these is a mammal?", ["Shark","Penguin","Dolphin","Octopus"]],
+  ["Which algorithm finds the most likely hidden path?", ["Forward","Viterbi","Baum–Welch","Dijkstra"]],
+  ["What is log(1)?", ["0","1","e","Undefined"]],
+  ["Which would you rather have for lunch?", ["Pizza","Ramen","Salad","Tacos"]]
+];
+const K = 4, LETTERS = ["A","B","C","D"], CHECKS = [0.25, 0.5, 0.75];
+const $ = id => document.getElementById(id);
+const arena = $("arena"), trail = $("trail"), ctx = trail.getContext("2d");
+const kap = $("kap"), stay = $("stay"), clo = $("clo");
+let qi = 0, state = "idle", logA, cents = [], last = null, t0 = 0;
+let cs = [], times = [], dists = [], segs = [], chosen = -1;
+const tally = CHECKS.map(() => ({ok:0, n:0}));
+
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const col = s => css("--c" + s);
+const argmax = a => a.reduce((b, v, i) => v > a[b] ? i : b, 0);
+const idxAt = f => { const tot = dists[dists.length - 1] || 0; const i = dists.findIndex(v => v >= f * tot); return i < 0 ? dists.length - 1 : i; };
+function lse(a){ const m = Math.max(...a); if (m === -Infinity) return m;
+  let s = 0; for (const x of a) s += Math.exp(x - m); return m + Math.log(s); }
+function logT(){ const p = +stay.value; return [Math.log(p), Math.log((1 - p) / (K - 1))]; }
+function emit(o, s){ return +kap.value * o.c[s] - +clo.value * o.d[s] / 150; }
+
+function forwardStep(la, c){
+  const [ls, lo] = logT(), k = +kap.value;
+  const nxt = [];
+  for (let s = 0; s < K; s++){
+    const pred = lse(la.map((a, j) => a + (j === s ? ls : lo)));
+    nxt.push(pred + emit(c, s));
+  }
+  const z = lse(nxt);
+  return nxt.map(v => v - z);
+}
+function forwardAll(seq){
+  let la = Array(K).fill(Math.log(1 / K)); const out = [];
+  for (const c of seq){ la = forwardStep(la, c); out.push(la.map(Math.exp)); }
+  return out;
+}
+function viterbi(seq){
+  const [ls, lo] = logT(), k = +kap.value;
+  let d = Array(K).fill(Math.log(1 / K)); const bp = [];
+  for (const c of seq){
+    const nd = [], b = [];
+    for (let s = 0; s < K; s++){
+      let best = -Infinity, bi = 0;
+      for (let j = 0; j < K; j++){ const v = d[j] + (j === s ? ls : lo); if (v > best){ best = v; bi = j; } }
+      nd.push(best + emit(c, s)); b.push(bi);
+    }
+    d = nd; bp.push(b);
+  }
+  const path = new Array(seq.length); let s = argmax(d);
+  for (let t = seq.length - 1; t >= 0; t--){ path[t] = s; s = bp[t][s]; }
+  return path;
+}
+
+function buildQuestion(){
+  const [q, opts] = QUESTIONS[qi % QUESTIONS.length];
+  $("qtext").textContent = q;
+  $("options").innerHTML = opts.map((o, i) =>
+    `<label class="opt"><span class="lab"><input type="radio" name="ans" value="${i}" disabled>${LETTERS[i]}. ${o}</span>
+     <span class="bar"><i></i></span><span class="pct">25%</span></label>`).join("");
+  document.querySelectorAll('#options input').forEach(inp =>
+    inp.addEventListener("change", () => { if (state === "tracking") finish(+inp.value); }));
+}
+function setBars(p){
+  const lead = argmax(p);
+  document.querySelectorAll(".opt").forEach((el, i) => {
+    el.querySelector(".bar i").style.width = (p[i] * 100).toFixed(1) + "%";
+    el.querySelector(".pct").textContent = Math.round(p[i] * 100) + "%";
+    el.classList.toggle("lead", state === "tracking" && p[lead] > 0.4 && i === lead);
+  });
+}
+function sizeCanvas(){
+  const r = arena.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  trail.width = r.width * dpr; trail.height = r.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  redrawTrail();
+}
+function redrawTrail(){
+  ctx.clearRect(0, 0, trail.width, trail.height);
+  ctx.lineWidth = 2.5; ctx.lineCap = "round";
+  for (const sg of segs){ ctx.strokeStyle = col(sg.s); ctx.beginPath(); ctx.moveTo(...sg.a); ctx.lineTo(...sg.b); ctx.stroke(); }
+}
+function computeCenters(){
+  const ar = arena.getBoundingClientRect();
+  cents = [...document.querySelectorAll(".opt")].map(o => {
+    const r = o.getBoundingClientRect();
+    return [r.left - ar.left, r.top - ar.top, r.right - ar.left, r.bottom - ar.top];
+  });
+}
+
+$("start").addEventListener("click", e => {
+  if (state === "done"){ qi++; reset(); return; }
+  state = "tracking"; arena.dataset.state = "tracking";
+  document.querySelectorAll('#options input').forEach(i => i.disabled = false);
+  $("start").disabled = true; $("hint").textContent = "";
+  computeCenters();
+  const ar = arena.getBoundingClientRect();
+  last = e.clientX || e.clientY ? [e.clientX - ar.left, e.clientY - ar.top] : null;
+  logA = Array(K).fill(Math.log(1 / K)); cs = []; times = []; dists = []; segs = [];
+  t0 = performance.now(); redrawTrail(); setBars([.25,.25,.25,.25]);
+});
+
+arena.addEventListener("pointermove", e => {
+  if (state !== "tracking" || e.pointerType === "touch") return;
+  const ar = arena.getBoundingClientRect();
+  const x = e.clientX - ar.left, y = e.clientY - ar.top;
+  if (!last){ last = [x, y]; return; }
+  const dx = x - last[0], dy = y - last[1], d = Math.hypot(dx, dy);
+  if (d < 3) return;
+  const c = { c: [], d: [] };
+  for (const [l, t, r, b] of cents){
+    let best = -1;
+    for (const fx of [0, .25, .5, .75, 1]) for (const fy of [0, .5, 1]){
+      const vx = l + fx * (r - l) - last[0], vy = t + fy * (b - t) - last[1], n = Math.hypot(vx, vy) || 1;
+      best = Math.max(best, (dx * vx + dy * vy) / (d * n));
+    }
+    const nx = Math.max(l - x, 0, x - r), ny = Math.max(t - y, 0, y - b);
+    c.c.push(best); c.d.push(Math.hypot(nx, ny));
+  }
+  logA = forwardStep(logA, c);
+  cs.push(c); times.push(performance.now() - t0); dists.push((dists[dists.length - 1] || 0) + d);
+  const p = logA.map(Math.exp), s = argmax(p);
+  segs.push({a: last, b: [x, y], s});
+  ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.strokeStyle = col(s);
+  ctx.beginPath(); ctx.moveTo(...last); ctx.lineTo(x, y); ctx.stroke();
+  last = [x, y]; setBars(p);
+});
+
+function finish(i){
+  chosen = i; state = "done"; arena.dataset.state = "done";
+  document.querySelectorAll('#options input').forEach(inp => inp.disabled = true);
+  $("start").disabled = false; $("start").textContent = "Next question";
+  if (cs.length){
+    const hist = forwardAll(cs);
+    CHECKS.forEach((f, k) => {
+      const p = hist[idxAt(f)];
+      tally[k].n++; if (argmax(p) === i) tally[k].ok++;
+    });
+  }
+  renderTally(); analyze();
+}
+function reset(){
+  state = "idle"; arena.dataset.state = "idle"; chosen = -1; segs = [];
+  $("start").textContent = "Start"; $("hint").textContent = "Read the question, then press Start and move to your answer.";
+  buildQuestion(); redrawTrail(); setBars([.25,.25,.25,.25]);
+}
+
+function analyze(){
+  const res = $("results");
+  if (chosen < 0) return;
+  res.hidden = false;
+  if (!cs.length){
+    $("story").textContent = "The cursor didn’t move between Start and the click, so there was nothing to predict from.";
+    $("checks").innerHTML = ""; drawChart([], []); return;
+  }
+  const hist = forwardAll(cs), path = viterbi(cs);
+  drawChart(hist, path);
+  const runs = [];
+  path.forEach((s, t) => {
+    if (!runs.length || runs[runs.length - 1].s !== s) runs.push({s, start: t ? times[t - 1] : 0, end: times[t]});
+    else runs[runs.length - 1].end = times[t];
+  });
+  const words = runs.map(r => `${LETTERS[r.s]} for ${((r.end - r.start) / 1000).toFixed(2)} s`);
+  $("story").innerHTML = `<strong>Viterbi’s reading:</strong> aimed at ${words.join(", then ")}. You clicked ${LETTERS[chosen]}.`;
+  $("checks").innerHTML = CHECKS.map(f => {
+    const p = hist[idxAt(f)], s = argmax(p), ok = s === chosen;
+    return `<div class="check"><b>${f * 100}% of the distance</b>Predicted ${LETTERS[s]} (${Math.round(p[s] * 100)}%)
+      <span class="${ok ? "ok" : "no"}">${ok ? "✓ right" : "✗ wrong"}</span></div>`;
+  }).join("");
+}
+
+function drawChart(hist, path){
+  const cv = $("chart"), dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+  cv.width = w * dpr; cv.height = h * dpr;
+  const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+  const L = 40, R = 10, T = 8, stripH = 14, B = 46, ph = h - T - B - stripH - 8;
+  g.font = "12px Instrument Sans, system-ui, sans-serif"; g.fillStyle = css("--muted"); g.strokeStyle = css("--line");
+  [0, .25, .5, .75, 1].forEach(v => {
+    const y = T + ph * (1 - v);
+    g.beginPath(); g.moveTo(L, y); g.lineTo(w - R, y); g.stroke();
+    g.fillText(Math.round(v * 100) + "%", 4, y + 4);
+  });
+  if (!hist.length) return;
+  const tmax = times[times.length - 1] || 1, X = t => L + (w - L - R) * t / tmax;
+  g.setLineDash([4, 4]);
+  CHECKS.forEach(f => { const t = times[idxAt(f)]; g.beginPath(); g.moveTo(X(t), T); g.lineTo(X(t), T + ph); g.stroke(); });
+  g.setLineDash([]); g.lineWidth = 2;
+  for (let s = 0; s < K; s++){
+    g.strokeStyle = col(s); g.beginPath();
+    hist.forEach((p, t) => { const x = X(times[t]), y = T + ph * (1 - p[s]); t ? g.lineTo(x, y) : g.moveTo(x, y); });
+    g.stroke();
+  }
+  const sy = T + ph + 8;
+  path.forEach((s, t) => { const x0 = X(t ? times[t - 1] : 0), x1 = X(times[t]); g.fillStyle = col(s); g.fillRect(x0, sy, Math.max(1, x1 - x0), stripH); });
+  g.fillStyle = css("--muted");
+  g.fillText("Viterbi path", L, sy + stripH + 14);
+  g.fillText((tmax / 1000).toFixed(2) + " s", w - R - 40, sy + stripH + 14);
+  for (let s = 0; s < K; s++){ const x = L + 110 + s * 46; g.fillStyle = col(s); g.fillRect(x, sy + stripH + 5, 10, 10); g.fillStyle = css("--ink"); g.fillText(LETTERS[s], x + 14, sy + stripH + 14); }
+}
+
+function renderTally(){
+  $("tally").innerHTML = CHECKS.map((f, k) =>
+    `<tr><td>Right at ${f * 100}% of the distance</td><td>${tally[k].n ? `${tally[k].ok} of ${tally[k].n} (${Math.round(100 * tally[k].ok / tally[k].n)}%)` : "no trials yet"}</td></tr>`).join("");
+}
+function syncLabels(){ $("kapv").textContent = (+kap.value).toFixed(1); $("stayv").textContent = (+stay.value).toFixed(3); $("clov").textContent = (+clo.value).toFixed(1); }
+[kap, stay, clo].forEach(el => el.addEventListener("input", () => { syncLabels(); if (state === "done") analyze(); }));
+
+if (matchMedia("(pointer:coarse)").matches && !matchMedia("(any-pointer:fine)").matches) $("touch").style.display = "block";
+window.addEventListener("resize", () => { sizeCanvas(); if (state === "done") analyze(); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { redrawTrail(); if (state === "done") analyze(); });
+syncLabels(); buildQuestion(); renderTally(); sizeCanvas();
+</script>
+</body>
+</html>

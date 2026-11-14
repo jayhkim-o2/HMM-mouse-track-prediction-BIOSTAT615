@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lakeshore Daily Life Study (mock) · survey-mode predictor demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f8f9;--surface:#ffffff;--ink:#1d2b36;--muted:#5a6773;--line:#d3dbe1;
+  --lake:#1e5f74;--banner:#fff3d6;--banner-ink:#5c4300;
+  --s0:#9aa5b1;--s1:#1e6f8c;--s2:#7b5ea7;--s3:#c97d10;
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10181f;--surface:#18232c;--ink:#e4eaef;--muted:#9eabb6;--line:#2c3a46;
+  --lake:#6cb4cc;--banner:#3a2f12;--banner-ink:#f3dc9c;
+  --s0:#7f8b97;--s1:#5fb0d0;--s2:#ad91dc;--s3:#e9a742;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10181f;--surface:#18232c;--ink:#e4eaef;--muted:#9eabb6;--line:#2c3a46;
+  --lake:#6cb4cc;--banner:#3a2f12;--banner-ink:#f3dc9c;
+  --s0:#7f8b97;--s1:#5fb0d0;--s2:#ad91dc;--s3:#e9a742;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6;font-size:17px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--banner)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50}
+.banner{background:var(--banner);color:var(--banner-ink);text-align:center;font-size:.88rem;font-weight:600;padding:6px 12px}
+header.site{background:var(--surface);border-bottom:1px solid var(--line)}
+.hwrap{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 28px;flex-wrap:wrap}
+.word{font-family:"Source Serif 4",Georgia,serif;font-weight:650;font-size:1.35rem;color:var(--lake);letter-spacing:-.01em}
+.word small{display:block;font-family:"Public Sans",system-ui,sans-serif;font-weight:500;font-size:.78rem;color:var(--muted);letter-spacing:0}
+nav a{color:var(--ink);text-decoration:none;margin-left:22px;font-weight:500;font-size:.95rem}
+nav a:hover{color:var(--lake);text-decoration:underline}
+main{padding:0 28px}
+section.sec{max-width:760px;margin:0 auto;padding:64px 0;border-bottom:1px solid var(--line)}
+section.sec:last-of-type{border-bottom:0}
+h1,h2{font-family:"Source Serif 4",Georgia,serif;font-weight:650;line-height:1.2;letter-spacing:-.01em}
+h1{font-size:2.3rem;margin:0 0 18px}
+h2{font-size:1.7rem;margin:0 0 16px}
+p{margin:0 0 16px;max-width:66ch}
+#about{min-height:85vh}
+details{border:1px solid var(--line);background:var(--surface);border-radius:8px;margin:0 0 10px}
+summary{cursor:pointer;padding:14px 16px;font-weight:600;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";display:inline-block;width:1.2em;color:var(--lake);font-weight:700}
+details[open] summary::before{content:"−"}
+details p{padding:0 16px 4px 2.2em;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:26px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.card h3{margin:0;font-size:1.1rem}
+.card p{color:var(--muted);font-size:.95rem;margin:0;flex:1}
+.card button{font:inherit;font-weight:600;padding:11px 14px;border-radius:8px;border:2px solid var(--lake);background:var(--lake);color:var(--surface);cursor:pointer}
+.card button:focus-visible,summary:focus-visible,nav a:focus-visible{outline:3px solid var(--s3);outline-offset:2px}
+footer{text-align:center;color:var(--muted);font-size:.88rem;padding:30px 20px 60px}
+.fake{font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+
+/* consent + overlays */
+.overlay{position:fixed;inset:0;background:rgba(10,20,28,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.overlay[hidden]{display:none}
+.dialog{background:var(--surface);color:var(--ink);max-width:560px;border-radius:12px;padding:26px;border:1px solid var(--line)}
+.dialog h2{font-size:1.4rem}
+.dialog p{color:var(--ink);font-size:.98rem}
+.btn{font:inherit;font-weight:600;padding:10px 18px;border-radius:8px;border:2px solid var(--lake);background:var(--lake);color:var(--surface);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--lake)}
+.btn:focus-visible{outline:3px solid var(--s3);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+/* live panel */
+#panel{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:340px;max-height:calc(100vh - 140px);overflow:auto;z-index:80;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:.88rem;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+#panel.min .pbody{display:none}
+#panel h4{margin:0;font-size:.95rem}
+.phead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.phead button{font:inherit;font-size:.8rem;background:none;border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:3px 8px;cursor:pointer}
+.guess{margin:12px 0 6px}
+.grow{display:grid;grid-template-columns:96px 1fr 40px;align-items:center;gap:8px;margin:4px 0}
+.gbar{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.gbar i{display:block;height:100%;width:33%;transition:width .2s}
+.gp{text-align:right;font-variant-numeric:tabular-nums}
+.sub{color:var(--muted);font-size:.8rem;margin:10px 0 4px}
+#chart{width:100%;height:96px;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.78rem;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;background:var(--c)}
+.acts{list-style:none;margin:4px 0 0;padding:0;font-family:ui-monospace,Menlo,monospace;font-size:.78rem;max-height:150px;overflow:auto}
+.acts li{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:3px 0}
+.acts li span:last-child{color:var(--muted)}
+.result{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:8px}
+.tests{list-style:none;padding:0;margin:10px 0 0;font-size:.92rem}
+.tests li{padding:6px 0;border-top:1px solid var(--line)}
+.pass{color:var(--s1);font-weight:700}.fail{color:#c0392b;font-weight:700}
+@media (min-width:1220px){body.panel-open main,body.panel-open footer{padding-right:380px}}
+@media (max-width:760px){.cards{grid-template-columns:minmax(0,1fr)}nav a{margin-left:12px}}
+</style>
+</head>
+<body class="panel-open">
+<div class="top">
+  <div class="banner">This is a fake study created for a class project. No real survey will be conducted.</div>
+  <header class="site"><div class="hwrap">
+    <div class="word">Lakeshore Daily Life Study<small>A mock study site for a BIOSTAT 615 project</small></div>
+    <nav><a href="#about">About</a><a href="#faq">FAQ</a><a href="#participate">Participate</a><a href="#contact">Contact</a></nav>
+  </div></header>
+</div>
+
+<main>
+  <section class="sec" id="about">
+    <h1>Welcome to the Lakeshore Daily Life Study</h1>
+    <p>The Lakeshore Daily Life Study is an imaginary project about how people spend an ordinary day: where their time goes, who they talk to, and what makes a day feel good or hard.</p>
+    <p>We would ask adults from many backgrounds about routines, sleep, work, family, and the small things that shape a week. Every answer would help build a fuller picture of daily life in lakeside towns.</p>
+    <p>In a real study, this is where you would read about the research team, the funding, and why the project matters. Here it is placeholder text, so the page has something to read and scroll past.</p>
+    <p>When you’re ready, look through the questions below or go straight to Participate to choose how you would like to take part.</p>
+  </section>
+
+  <section class="sec" id="faq">
+    <h2>Frequently asked questions</h2>
+    <details id="faq-01"><summary>What is this study about?</summary><p>Everyday routines and wellbeing. In this mock site, nothing is actually collected about you.</p></details>
+    <details id="faq-02"><summary>Who can join?</summary><p>In the pretend version, any adult living near the lakeshore region.</p></details>
+    <details id="faq-03"><summary>How long does it take?</summary><p>About 25 minutes, if it were real.</p></details>
+    <details id="faq-04"><summary>What kinds of questions are asked?</summary><p>Questions about sleep, social contact, work, free time, and mood.</p></details>
+    <details id="faq-05"><summary>Is my information private?</summary><p>A real study would explain its privacy protections here. This page records only browsing actions, never anything you type.</p></details>
+    <details id="faq-06"><summary>Can I stop partway through?</summary><p>Yes. You could stop at any time without giving a reason.</p></details>
+    <details id="faq-07"><summary>Is there a thank-you gift?</summary><p>[Placeholder: thank-you gift details.]</p></details>
+    <details id="faq-08"><summary>Do I need special equipment?</summary><p>No special equipment would be needed.</p></details>
+    <details id="faq-09"><summary>Who runs the study?</summary><p>[Placeholder: research team.] This is a class project, not real research.</p></details>
+    <details id="faq-10"><summary>How will the answers be used?</summary><p>Answers would be studied as a group to look for patterns.</p></details>
+  </section>
+
+  <section class="sec" id="participate">
+    <h2>Participate</h2>
+    <p>Thank you for your interest. Choose one of the three ways to take part below.</p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section class="sec" id="contact">
+    <h2>Contact</h2>
+    <p>Questions? In a real study you could reach the team here.</p>
+    <p class="fake">Phone: 555-0100 · Email: [contact info]</p>
+  </section>
+</main>
+<footer>This is a fake study created for a class project. No real survey will be conducted.</footer>
+
+<!-- consent -->
+<div class="overlay" id="consent">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="ctitle">
+    <h2 id="ctitle">Before you start</h2>
+    <p>This is a class project for BIOSTAT 615, not real research and not a real study. While you browse, this page records your scrolling, clicks, mouse movement and timing. It does not record anything you type, your name, or your email. Taking part is voluntary; you can close this tab at any time, and unfinished visits are thrown away.</p>
+    <p>In this demo, nothing leaves your browser. At the end you can save the recording as a file if you want.</p>
+    <p id="sizewarn" class="muted" hidden style="color:var(--muted)">This works best in a window at least 1024 × 650. Yours is smaller, so the page may feel cramped.</p>
+    <div class="row"><button class="btn" id="agree" type="button">I agree, start</button></div>
+  </div>
+</div>
+<div class="overlay" id="nofine" hidden>
+  <div class="dialog"><h2>Please use a laptop or desktop</h2><p>This demo watches mouse movement, so it needs a mouse or trackpad. Nothing has been recorded.</p></div>
+</div>
+<div class="overlay" id="thanks" hidden>
+  <div class="dialog">
+    <h2>Thanks!</h2>
+    <p>This is a class project, so no survey will follow. The panel shows what the model saw, including its hindsight reading of your visit.</p>
+    <div class="row">
+      <button class="btn" id="closeThanks" type="button">See the model’s reading</button>
+      <button class="btn ghost" id="dl" type="button" hidden>Download my recording</button>
+      <button class="btn ghost" id="again" type="button">Start a new visit</button>
+    </div>
+    <p id="dlmsg" style="color:var(--muted);font-size:.88rem;margin-top:10px"></p>
+  </div>
+</div>
+<div class="overlay" id="testsDlg" hidden>
+  <div class="dialog">
+    <h2>Correctness checks</h2>
+    <p style="color:var(--muted)">These run in your browser right now (SPEC tests 1, 2, 4 and 5).</p>
+    <ul class="tests" id="testList"></ul>
+    <div class="row"><button class="btn" id="closeTests" type="button">Close</button></div>
+  </div>
+</div>
+
+<!-- live panel -->
+<aside id="panel" aria-label="Live model view">
+  <div class="phead"><h4>Live model view</h4>
+    <span><button id="runTests" type="button">Run checks</button> <button id="minBtn" type="button">Hide</button></span></div>
+  <div class="pbody">
+    <div class="guess" id="guess"></div>
+    <div class="sub">Hidden state after each action</div>
+    <svg id="chart" viewBox="0 0 300 96" preserveAspectRatio="none"></svg>
+    <div class="legend">
+      <span style="--c:var(--s0)">Undecided</span><span style="--c:var(--s1)">Lean web</span>
+      <span style="--c:var(--s2)">Lean AI</span><span style="--c:var(--s3)">Lean person</span></div>
+    <div id="result"></div>
+    <div class="sub">Actions so far (<span id="nacts">0</span>)</div>
+    <ul class="acts" id="acts"></ul>
+  </div>
+</aside>
+
+<script>
+/* ===================== CONFIG (SPEC section 13) ===================== */
+const CFG = { SECTION_DWELL_MS:2000, PAUSE_MS:10000, PAUSE_MAX_REPEAT:3, PAUSE_MOVE_PX:5,
+  ZONE_PX:150, ZONE_EXIT_PX:170, REST_MS:500, HEAD_THRESHOLD:0.6, HEAD_SUSTAIN_MS:500,
+  MOUSE_HZ:10, SCROLL_HZ:10, BASE_CHOICE:[1/3,1/3,1/3], RANDOMIZE_CARD_ORDER:true,
+  INTENT_TAU:150, INTENT_KAPPA:2, SCHEMA_VERSION:1, PROJECT_CODE:"BIOSTAT615-POC" };
+
+const SYM = ["VIEW_ABOUT","VIEW_FAQ","VIEW_PARTICIPATE","VIEW_CONTACT","OPEN_FAQ","PAUSE",
+  "HEAD_WEB","HEAD_AI","HEAD_PERSON","ZONE_WEB","ZONE_AI","ZONE_PERSON",
+  "REST_WEB","REST_AI","REST_PERSON","SWITCH"];
+const S = Object.fromEntries(SYM.map((s,i)=>[s,i]));
+const OPTS = ["web","ai","person"];
+const OPT_LABEL = {web:"Web survey", ai:"AI phone", person:"Person phone"};
+const SECS = ["about","faq","participate","contact"];
+
+/* ===================== HMM (SPEC section 7) ===================== */
+function handsetModel(){
+  const init = [0.97,0.01,0.01,0.01];
+  const A = [[0.85,0.05,0.05,0.05]];
+  for (let i=1;i<4;i++){ const r=[0.04,0.03,0.03,0.03]; r[i]=0.90; A.push(r); }
+  const U = [.14,.14,.12,.08,.14,.12, .03,.03,.03, .04,.04,.04, .01,.01,.01, .02];
+  const B = [U];
+  for (let x=0;x<3;x++){
+    const r=[.03,.03,.05,.03,.04,.06];
+    for (let k=0;k<3;k++) r.push(k===x?.14:.03);   // HEAD_*
+    for (let k=0;k<3;k++) r.push(k===x?.16:.04);   // ZONE_*
+    for (let k=0;k<3;k++) r.push(k===x?.18:.02);   // REST_*
+    r.push(.10);                                   // SWITCH
+    B.push(r);
+  }
+  return {init, A, B};
+}
+function validateModel(m){
+  const sum = a => a.reduce((s,v)=>s+v,0), ok = r => Math.abs(sum(r)-1)<1e-9 && r.every(v=>v>0);
+  if (!ok(m.init) || !m.A.every(ok) || !m.B.every(ok)) throw new Error("Invalid model: a row does not sum to 1 or has a zero");
+  return true;
+}
+const lse = a => { const mx=Math.max(...a); if(mx===-Infinity) return mx; let s=0; for(const v of a) s+=Math.exp(v-mx); return mx+Math.log(s); };
+
+// Forward with rescaling at every step: returns filtered probabilities and log-likelihood.
+function forwardScaled(m, obs){
+  const n=m.init.length, filt=[]; let ll=0, prev=null;
+  for (let t=0;t<obs.length;t++){
+    const a=new Array(n);
+    for (let s=0;s<n;s++){
+      let pred = t===0 ? m.init[s] : 0;
+      if (t>0) for (let j=0;j<n;j++) pred += prev[j]*m.A[j][s];
+      a[s] = pred*m.B[s][obs[t]];
+    }
+    const c=a.reduce((x,y)=>x+y,0); ll+=Math.log(c);
+    prev=a.map(v=>v/c); filt.push(prev);
+  }
+  return {filt, logLik:ll};
+}
+// Same algorithm in log space (cross-check).
+function forwardLog(m, obs){
+  const n=m.init.length, filt=[]; let la=null;
+  for (let t=0;t<obs.length;t++){
+    const nx=new Array(n);
+    for (let s=0;s<n;s++){
+      const pred = t===0 ? Math.log(m.init[s]) : lse(la.map((v,j)=>v+Math.log(m.A[j][s])));
+      nx[s]=pred+Math.log(m.B[s][obs[t]]);
+    }
+    la=nx; const z=lse(la); filt.push(la.map(v=>Math.exp(v-z)));
+  }
+  return {filt, logLik: la ? lse(la) : 0};
+}
+// Viterbi in log space; ties go to the lower state index.
+function viterbi(m, obs){
+  const n=m.init.length; if(!obs.length) return {path:[], logProb:0};
+  let d=m.init.map((p,s)=>Math.log(p)+Math.log(m.B[s][obs[0]])); const bp=[];
+  for (let t=1;t<obs.length;t++){
+    const nd=[], b=[];
+    for (let s=0;s<n;s++){
+      let best=-Infinity, bi=0;
+      for (let j=0;j<n;j++){ const v=d[j]+Math.log(m.A[j][s]); if(v>best){best=v;bi=j;} }
+      nd.push(best+Math.log(m.B[s][obs[t]])); b.push(bi);
+    }
+    d=nd; bp.push(b);
+  }
+  let s=0; for (let i=1;i<n;i++) if (d[i]>d[s]) s=i;
+  const path=[s]; for (let t=bp.length-1;t>=0;t--){ s=bp[t][s]; path.unshift(s); }
+  return {path, logProb:Math.max(...d)};
+}
+// List every path (tests only, short sequences).
+function bruteForce(m, obs){
+  const n=m.init.length, T=obs.length; let total=0, best=-1, bestPath=null; const lastMarg=new Array(n).fill(0);
+  const path=new Array(T);
+  (function rec(t,p){
+    if (t===T){ total+=p; lastMarg[path[T-1]]+=p; if(p>best){best=p;bestPath=path.slice();} return; }
+    for (let s=0;s<n;s++){
+      path[t]=s;
+      const q = t===0 ? m.init[s] : m.A[path[t-1]][s];
+      rec(t+1, p*q*m.B[s][obs[t]]);
+    }
+  })(0,1);
+  return {total, best, bestPath, lastFilt:lastMarg.map(v=>v/total)};
+}
+// Incremental forward for live use; matches forwardScaled step by step.
+function createLiveForward(m){
+  let prev=null;
+  return { step(o){
+    const n=m.init.length, a=new Array(n);
+    for (let s=0;s<n;s++){
+      let pred = prev ? 0 : m.init[s];
+      if (prev) for (let j=0;j<n;j++) pred += prev[j]*m.A[j][s];
+      a[s]=pred*m.B[s][o];
+    }
+    const c=a.reduce((x,y)=>x+y,0); prev=a.map(v=>v/c); return prev;
+  }};
+}
+const choiceGuess = f => OPTS.map((_,k)=> f[k+1] + f[0]*CFG.BASE_CHOICE[k]);
+
+/* ===================== Site setup ===================== */
+const $ = id => document.getElementById(id);
+const MODEL = handsetModel(); validateModel(MODEL);
+const CARD_TEXT = {
+  web:{t:"Web survey", d:"Answer the questions online, on your own, whenever it suits you."},
+  ai:{t:"AI phone interview", d:"Answer the questions out loud with an automated voice on a call."},
+  person:{t:"Phone interview with a person", d:"Answer with a trained interviewer on a call scheduled for a later time."}
+};
+let cardOrder = OPTS.slice();
+if (CFG.RANDOMIZE_CARD_ORDER) for (let i=cardOrder.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cardOrder[i],cardOrder[j]]=[cardOrder[j],cardOrder[i]]; }
+$("cards").innerHTML = cardOrder.map(o=>`<div class="card" id="card-${o}"><h3>${CARD_TEXT[o].t}</h3><p>${CARD_TEXT[o].d}</p><button type="button" id="opt-${o}" data-opt="${o}">Choose this</button></div>`).join("");
+const btnRect = k => $("opt-"+OPTS[k]).getBoundingClientRect();
+const rectDist = (x,y,r) => Math.hypot(Math.max(r.left-x,0,x-r.right), Math.max(r.top-y,0,y-r.bottom));
+
+/* ===================== Recorder + streaming converter ===================== */
+let recording=false, t0=0, raw=[], acts=[], live=createLiveForward(MODEL), filtHist=[MODEL.init.slice()];
+const meta = { visit_id:(crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2)),
+  schema_version:CFG.SCHEMA_VERSION, project_code:CFG.PROJECT_CODE, mode:"demo",
+  pid:new URLSearchParams(location.search).get("pid"), persona_id:null, card_order:cardOrder,
+  user_agent:navigator.userAgent, started_at:null };
+const now = () => performance.now()-t0;
+let ptr=null;                       // latest pointer position (client coords)
+let lastMouseLog=-1e9, lastScrollLog=-1e9;
+// converter state
+let dom=null, domSince=0, domDone=false;
+let lastActivity=0, pauseCount=0, anchor=null;
+let iprobs=[1/3,1/3,1/3], prevSample=null, headCand=null, headSince=0, lastHead=null;
+let zone=null, lastZoneEntered=null;
+let restBtn=null, restSince=0, restDone=false;
+
+function emit(sym, detail){
+  if (!recording) return;
+  const t=Math.round(now());
+  acts.push({t, symbol:SYM[sym], detail:detail||null});
+  filtHist.push(live.step(sym));
+  renderPanel();
+}
+function activity(t){ lastActivity=t; pauseCount=0; }
+function logLayout(){
+  const sy=scrollY, R=el=>{const r=el.getBoundingClientRect();return {x:r.left,y:r.top+sy,w:r.width,h:r.height};};
+  raw.push({type:"layout", t:Math.round(now()), w:innerWidth, h:innerHeight,
+    sections:Object.fromEntries(SECS.map(s=>[s,R($(s))])),
+    buttons:Object.fromEntries(OPTS.map(o=>[o,R($("opt-"+o))])),
+    cards:Object.fromEntries(OPTS.map(o=>[o,R($("card-"+o))])), card_order:cardOrder});
+}
+function participateVisible(){
+  return OPTS.some((_,k)=>{ const r=btnRect(k); return r.bottom>0 && r.top<innerHeight; });
+}
+// Mouse-intent module: direction toward each button's whole box plus closeness (owner's demo, ported).
+function intentUpdate(x,y){
+  if (!participateVisible()){ iprobs=[1/3,1/3,1/3]; prevSample=[x,y]; return; }
+  if (!prevSample){ prevSample=[x,y]; return; }
+  const dx=x-prevSample[0], dy=y-prevSample[1], d=Math.hypot(dx,dy);
+  if (d<3) return;
+  const sc = OPTS.map((_,k)=>{
+    const r=btnRect(k); let best=-1;
+    for (const fx of [0,.25,.5,.75,1]) for (const fy of [0,.5,1]){
+      const vx=r.left+fx*r.width-prevSample[0], vy=r.top+fy*r.height-prevSample[1], n=Math.hypot(vx,vy)||1;
+      best=Math.max(best,(dx*vx+dy*vy)/(d*n));
+    }
+    return CFG.INTENT_KAPPA*best - rectDist(x,y,r)/CFG.INTENT_TAU;
+  });
+  const z=lse(sc); iprobs=sc.map(v=>Math.exp(v-z)); prevSample=[x,y];
+}
+function zoneUpdate(x,y){
+  const ds=OPTS.map((_,k)=>rectDist(x,y,btnRect(k)));
+  let near=0; for (let k=1;k<3;k++) if (ds[k]<ds[near]) near=k;
+  if (zone!==null && ds[zone]>CFG.ZONE_EXIT_PX) zone=null;
+  if (ds[near]<=CFG.ZONE_PX && near!==zone){
+    zone=near; emit(S.ZONE_WEB+near, OPTS[near]);
+    if (lastZoneEntered!==null && lastZoneEntered!==near) emit(S.SWITCH, OPTS[lastZoneEntered]+"→"+OPTS[near]);
+    lastZoneEntered=near;
+  }
+}
+addEventListener("mousemove", e=>{
+  if (!recording) return;
+  const t=now(); ptr=[e.clientX,e.clientY];
+  if (!anchor || Math.hypot(ptr[0]-anchor[0],ptr[1]-anchor[1])>CFG.PAUSE_MOVE_PX){ anchor=ptr; activity(t); }
+  if (t-lastMouseLog < 1000/CFG.MOUSE_HZ) return;
+  lastMouseLog=t;
+  raw.push({type:"mouse", t:Math.round(t), x:e.clientX, y:e.clientY});
+  intentUpdate(e.clientX,e.clientY); zoneUpdate(e.clientX,e.clientY);
+});
+addEventListener("scroll", ()=>{
+  if (!recording) return;
+  const t=now(); activity(t);
+  if (t-lastScrollLog < 1000/CFG.SCROLL_HZ) return;
+  lastScrollLog=t; raw.push({type:"scroll", t:Math.round(t), scrollY:Math.round(scrollY)});
+},{passive:true});
+addEventListener("click", ()=>{ if (recording) activity(now()); }, true);
+addEventListener("resize", ()=>{ if (recording) logLayout(); });
+document.addEventListener("visibilitychange", ()=>{ if (recording) raw.push({type:"visibility", t:Math.round(now()), hidden:document.hidden}); });
+document.querySelectorAll("details").forEach(d=>d.addEventListener("toggle", ()=>{
+  if (!recording) return;
+  raw.push({type:"faq", t:Math.round(now()), faq_id:d.id, open:d.open});
+  if (d.open) emit(S.OPEN_FAQ, d.id);
+}));
+OPTS.forEach(o=>{
+  const c=$("card-"+o);
+  c.addEventListener("mouseenter",()=>{ if(recording) raw.push({type:"card_hover",t:Math.round(now()),option:o,enter:true}); });
+  c.addEventListener("mouseleave",()=>{ if(recording) raw.push({type:"card_hover",t:Math.round(now()),option:o,enter:false}); });
+  $("opt-"+o).addEventListener("click", e=>{ if (recording) finish(o, e); });
+});
+
+// Clock-driven rules: section dwell, pauses, sustained heading, resting on a button.
+setInterval(()=>{
+  if (!recording) return;
+  const t=now(), vh=innerHeight;
+  // dominant section
+  let best=null, bs=0;
+  SECS.forEach((id,i)=>{ const r=$(id).getBoundingClientRect(); const s=Math.max(0,Math.min(r.bottom,vh)-Math.max(r.top,0))/vh; if(s>bs){bs=s;best=i;} });
+  if (bs<0.05) best=null;
+  if (best!==dom){ dom=best; domSince=t; domDone=false; }
+  else if (dom!==null && !domDone && t-domSince>=CFG.SECTION_DWELL_MS){ domDone=true; emit(S.VIEW_ABOUT+dom, SECS[dom]); }
+  // pause
+  if (pauseCount<CFG.PAUSE_MAX_REPEAT && t-lastActivity>=CFG.PAUSE_MS*(pauseCount+1)){ pauseCount++; emit(S.PAUSE); }
+  // heading
+  let lead=0; for (let k=1;k<3;k++) if (iprobs[k]>iprobs[lead]) lead=k;
+  if (iprobs[lead]>CFG.HEAD_THRESHOLD){
+    if (headCand!==lead){ headCand=lead; headSince=t; }
+    else if (t-headSince>=CFG.HEAD_SUSTAIN_MS && lastHead!==lead){ lastHead=lead; emit(S.HEAD_WEB+lead, OPTS[lead]); }
+  } else headCand=null;
+  // rest
+  let inside=null;
+  if (ptr) OPTS.forEach((_,k)=>{ if (rectDist(ptr[0],ptr[1],btnRect(k))===0) inside=k; });
+  if (inside===null) restBtn=null;
+  else if (restBtn!==inside){ restBtn=inside; restSince=t; restDone=false; }
+  else if (!restDone && t-restSince>=CFG.REST_MS){ restDone=true; emit(S.REST_WEB+inside, OPTS[inside]); }
+}, 100);
+
+/* ===================== Visit flow ===================== */
+const fine = matchMedia("(pointer: fine)").matches || matchMedia("(any-pointer: fine)").matches;
+if (!fine){ $("consent").hidden=true; $("nofine").hidden=false; }
+if (innerWidth<1024 || innerHeight<650) $("sizewarn").hidden=false;
+$("agree").addEventListener("click", ()=>{
+  $("consent").hidden=true; t0=performance.now(); recording=true;
+  meta.started_at=new Date().toISOString(); lastActivity=0; logLayout(); renderPanel();
+});
+let chosen=null, finalPath=null, downloads=null;
+function finish(o, e){
+  const t=Math.round(now());
+  raw.push({type:"mouse", t, x:e.clientX, y:e.clientY});
+  raw.push({type:"choice", t, option:o});           // the label, never an action
+  recording=false; chosen=o;
+  finalPath = viterbi(MODEL, acts.map(a=>S[a.symbol])).path;
+  renderPanel();
+  $("thanks").hidden=false; $("dl").hidden = !downloads; $("dlmsg").textContent="";
+}
+$("closeThanks").addEventListener("click", ()=>{ $("thanks").hidden=true; $("panel").classList.remove("min"); });
+$("again").addEventListener("click", ()=>location.reload());
+$("dl").addEventListener("click", async ()=>{
+  const payload={...meta, choice:chosen, raw_log:raw, actions:acts};
+  try { await downloads.save({filename:`visit_${meta.visit_id}.json`, data:JSON.stringify(payload,null,1)}); $("dlmsg").textContent="Saved."; }
+  catch(err){ $("dlmsg").textContent = err && err.code==="declined" ? "Download cancelled." : "Saving isn’t available here."; if (err && err.code!=="declined" && err.code!=="rate_limited") $("dl").hidden=true; }
+});
+(async()=>{ try{ if (window.claude && claude.use){ downloads = await claude.use("downloads"); } }catch(e){ downloads=null; } })();
+
+/* ===================== Live panel ===================== */
+$("minBtn").addEventListener("click", ()=>{ const p=$("panel"); p.classList.toggle("min"); const m=p.classList.contains("min"); $("minBtn").textContent=m?"Show":"Hide"; document.body.classList.toggle("panel-open",!m); });
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function renderPanel(){
+  const f=filtHist[filtHist.length-1], g=choiceGuess(f);
+  $("guess").innerHTML = OPTS.map((o,k)=>`<div class="grow"><span>${OPT_LABEL[o]}</span><span class="gbar"><i style="width:${(g[k]*100).toFixed(1)}%;background:var(--s${k+1})"></i></span><span class="gp">${Math.round(g[k]*100)}%</span></div>`).join("");
+  // stacked state chart over action number
+  const W=300, H=finalPath?80:96, n=filtHist.length, X=i=> n>1 ? i*W/(n-1) : 0;
+  let svg="";
+  if (n===1){ let y=0; for (let s=0;s<4;s++){ const h=f[s]*H; svg+=`<rect x="0" y="${y}" width="${W}" height="${h}" fill="${css("--s"+s)}"/>`; y+=h; } }
+  else {
+    const cum=filtHist.map(p=>{ let c=0; return p.map(v=>c+=v); });
+    for (let s=0;s<4;s++){
+      const top=cum.map((c,i)=>`${X(i)},${(H*(c[s]-filtHist[i][s])).toFixed(2)}`);
+      const bot=cum.map((c,i)=>`${X(i)},${(H*c[s]).toFixed(2)}`).reverse();
+      svg+=`<polygon points="${top.concat(bot).join(" ")}" fill="${css("--s"+s)}"/>`;
+    }
+  }
+  if (finalPath && finalPath.length){
+    const w=W/finalPath.length;
+    finalPath.forEach((s,i)=>{ svg+=`<rect x="${(i*w).toFixed(2)}" y="84" width="${(w+.5).toFixed(2)}" height="12" fill="${css("--s"+s)}"/>`; });
+  }
+  $("chart").innerHTML=svg;
+  $("nacts").textContent=acts.length;
+  $("acts").innerHTML = acts.slice().reverse().map(a=>`<li><span>${a.symbol}</span><span>${(a.t/1000).toFixed(1)} s</span></li>`).join("");
+  if (chosen){
+    let top=0; for (let k=1;k<3;k++) if (g[k]>g[top]) top=k;
+    const names=["undecided","leaning web","leaning AI","leaning person"];
+    const runs=[]; (finalPath||[]).forEach(s=>{ if(!runs.length||runs[runs.length-1].s!==s) runs.push({s,n:1}); else runs[runs.length-1].n++; });
+    $("result").innerHTML = `<div class="result"><strong>You chose ${OPT_LABEL[chosen]}.</strong> Just before the click, the model’s top guess was ${OPT_LABEL[OPTS[top]]} (${Math.round(g[top]*100)}%) <span class="${OPTS[top]===chosen?"pass":"fail"}">${OPTS[top]===chosen?"✓ right":"✗ wrong"}</span>.<br><span style="color:var(--muted)">Viterbi’s hindsight reading (strip under the chart): ${runs.length? runs.map(r=>`${names[r.s]} for ${r.n} action${r.n>1?"s":""}`).join(", then ") : "no actions were recorded"}.</span></div>`;
+  } else $("result").innerHTML = recording ? "" : `<p class="sub">Press “I agree, start” to begin.</p>`;
+}
+renderPanel();
+
+/* ===================== Correctness checks (SPEC section 14) ===================== */
+function rng(seed){ return ()=>{ seed=(seed*1664525+1013904223)>>>0; return seed/4294967296; }; }
+function randRow(r,n){ const v=Array.from({length:n},()=>0.05+r()); const s=v.reduce((a,b)=>a+b,0); return v.map(x=>x/s); }
+function runTests(){
+  const res=[], close=(a,b,tol)=>Math.abs(a-b)<=tol;
+  // Test 1: hand-worked example
+  { const m={init:[.6,.4],A:[[.7,.3],[.4,.6]],B:[[.9,.1],[.2,.8]]}, obs=[0,1,0];
+    const f=forwardScaled(m,obs), v=viterbi(m,obs);
+    const pA=f.filt.map(p=>p[0]), ok = close(Math.exp(f.logLik),0.10893,1e-5) && close(pA[0],.87097,1e-5) && close(pA[1],.19617,1e-5) && close(pA[2],.79234,1e-5)
+      && v.path.join()==="0,1,0" && close(Math.exp(v.logProb),0.046656,1e-9);
+    res.push([ok,"1. Hand-worked example",`P(obs)=${Math.exp(f.logLik).toFixed(5)}, filtered P(A)=${pA.map(x=>x.toFixed(5)).join(", ")}, Viterbi ${v.path.map(s=>"AB"[s]).join("")} (${Math.exp(v.logProb).toFixed(6)})`]); }
+  // Test 2: brute force on random 4-state, 16-symbol models
+  { const r=rng(615); let ok=true, worst=0;
+    for (let i=0;i<500;i++){
+      const m={init:randRow(r,4),A:[0,1,2,3].map(()=>randRow(r,4)),B:[0,1,2,3].map(()=>randRow(r,16))};
+      const T=1+Math.floor(r()*5), obs=Array.from({length:T},()=>Math.floor(r()*16));
+      const f=forwardScaled(m,obs), b=bruteForce(m,obs), v=viterbi(m,obs);
+      const rel=Math.abs(Math.exp(f.logLik)-b.total)/b.total; worst=Math.max(worst,rel);
+      if (rel>1e-10 || !f.filt[T-1].every((p,s)=>close(p,b.lastFilt[s],1e-10)) || Math.abs(Math.exp(v.logProb)-b.best)/b.best>1e-10) ok=false;
+    }
+    res.push([ok,"2. Forward and Viterbi vs. listing every path",`500 random models, worst relative error ${worst.toExponential(1)}`]); }
+  // Test 4: sanity + invalid model rejected
+  { const r=rng(7), obs=Array.from({length:300},()=>Math.floor(r()*16));
+    const f=forwardScaled(MODEL,obs), sane=f.filt.every(p=>close(p.reduce((a,b)=>a+b,0),1,1e-9)&&p.every(v=>v>=0&&!isNaN(v)));
+    let rejected=false; try{ validateModel({init:[.5,.5,0,0],A:MODEL.A,B:MODEL.B}); }catch(e){ rejected=true; }
+    res.push([sane&&rejected,"4. Probabilities sum to 1, bad models rejected",`hand-set model valid; a model with a zero was ${rejected?"rejected":"accepted (bad)"}`]); }
+  // Test 5: long sequences, scaled vs log, unscaled underflows
+  { const r=rng(99), obs=Array.from({length:2000},()=>Math.floor(r()*16));
+    const a=forwardScaled(MODEL,obs), b=forwardLog(MODEL,obs);
+    const agree = close(a.logLik,b.logLik,1e-8*Math.abs(b.logLik)) && a.filt.every((p,t)=>p.every((v,s)=>close(v,b.filt[t][s],1e-8)));
+    let al=MODEL.init.map((p,s)=>p*MODEL.B[s][obs[0]]);
+    for (let t=1;t<obs.length;t++) al=[0,1,2,3].map(s=>al.reduce((acc,v,j)=>acc+v*MODEL.A[j][s],0)*MODEL.B[s][obs[t]]);
+    const unscaled=al.reduce((x,y)=>x+y,0);
+    res.push([agree,"5. Long sequence (2,000 steps)",`scaled and log versions agree (log-likelihood ${a.logLik.toFixed(1)}); plain unscaled version gives ${unscaled}, which is underflow`]); }
+  // Live vs batch
+  { const r=rng(3), obs=Array.from({length:50},()=>Math.floor(r()*16)), lf=createLiveForward(MODEL), f=forwardScaled(MODEL,obs);
+    const ok=obs.every((o,t)=>lf.step(o).every((v,s)=>v===f.filt[t][s]));
+    res.push([ok,"Live forward matches batch forward","50-step sequence, exact match"]); }
+  $("testList").innerHTML = res.map(([ok,name,detail])=>`<li><span class="${ok?"pass":"fail"}">${ok?"PASS":"FAIL"}</span> ${name}<br><span style="color:var(--muted);font-size:.85rem">${detail}</span></li>`).join("");
+  $("testsDlg").hidden=false;
+}
+$("runTests").addEventListener("click", runTests);
+$("closeTests").addEventListener("click", ()=>{ $("testsDlg").hidden=true; });
+</script>
+</body>
+</html>

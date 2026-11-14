@@ -1,0 +1,5 @@
+/* Placeholder styles. The real palette and layout come in checkpoint step 3. */
+body { margin: 0; font-family: system-ui, sans-serif; color: #1d2733; background: #fbfaf7; }
+.banner { position: fixed; top: 0; left: 0; right: 0; padding: 0.5rem 1rem;
+  background: #2f4858; color: #fff; text-align: center; font-size: 0.95rem; }
+main { max-width: 48rem; margin: 4rem auto; padding: 0 1rem; }
