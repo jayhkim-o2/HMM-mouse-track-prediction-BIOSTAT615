@@ -67,5 +67,9 @@
   Wrong turn: the agent wrote an automated headless-Edge click-through test and tried to run
   it on the owner's computer, which needed the command sandbox turned off. The owner declined:
   they only care that it runs from GitHub. The agent then checked the deployed files instead;
-  the owner's click-through on the live URL is pending. Lesson: ask how the owner wants
+  the owner then did a live role-play visit and shared the downloaded JSON, which the agent
+  checked field by field (metadata, card order, layout after FAQ toggles, choice last).
+  [EPISODE] Caught by the owner, not the agent: a large empty gap under About. The agent had
+  carried over the prototype's `#about { min-height: 85vh }`; on the owner's 1209 px-tall
+  window that stretched four paragraphs to ~1030 px. Fixed by removing the rule. Lesson: ask how the owner wants
   something verified before setting up heavy local tooling.

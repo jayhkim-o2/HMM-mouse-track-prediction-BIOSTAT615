@@ -9,7 +9,7 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 |---|------|--------|------|
 | 1 | Repo setup, docs, GitHub Pages deploy | Working | Live URL loads; Actions deploy succeeds |
 | 2 | HMM core (forward, log forward, Viterbi, brute force) + tests 1, 2, 4, 5 | Working | All 5 pass in Node and on live `tests.html` |
-| 3 | Mock study site + recorder + download backup | Not working | Built and deployed; live click-through not yet confirmed |
+| 3 | Mock study site + recorder + download backup | Working | Owner's live role-play visit recorded and downloaded correctly |
 | 4 | Mouse-intent module + action converter + test 7 | Not started | |
 | 5 | Live demo panel (`?demo=1`) | Not started | |
 | 6 | Saving visits to Google Sheet | Not started | |
@@ -37,5 +37,7 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 - 2026-11-14: Step 3. Built `site/` (index.html, styles.css, site.js, recorder.js): all
   sections, banner, notice with config placeholders, desktop check, `?rp=1` persona screen,
   shuffled cards, raw recorder (SPEC 6.1 events), thank-you overlay, localStorage backup and
-  "Download my recording". Not yet tested by clicking through; to be checked on the live site.
+  "Download my recording". Owner did a live `?rp=1&pid=P1` visit; the downloaded JSON had
+  correct metadata, shuffled card order, layout after each FAQ toggle, and the choice last.
+  Owner spotted a big empty gap under About: a leftover `min-height: 85vh` rule; removed.
   Next: step 4 (intent + converter + test 7).
