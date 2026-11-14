@@ -19,6 +19,7 @@ cp site/index.html _site/index.html
 cp -r site _site/site
 cp -r core _site/core
 cp tests.html _site/tests.html
+cp -r tests _site/tests
 
 # Build the dashboard only once it has a package.json (checkpoint step 8).
 if [ -f dashboard/package.json ]; then

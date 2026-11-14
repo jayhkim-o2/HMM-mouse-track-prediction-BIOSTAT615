@@ -16,7 +16,11 @@
 - Agent: writes code, scripts and docs one step at a time, and runs local checks.
 
 ## Verification
-(fill in: which tests, hand-checked example, brute-force comparison, Python cross-check)
+- `tests.html` (browser) and `node tests/run_node.mjs` (terminal, and on every deploy) run the
+  same SPEC tests: hand-worked example, brute force on 500 random models, sanity/validation,
+  2,000-step scaled-vs-log agreement, live-vs-batch.
+- The tests were checked by planting a bug and confirming they fail.
+- Still to come: converter tests (test 7), Python cross-check (test 3).
 
 ## Reflection
 (write at the end)
@@ -44,3 +48,13 @@
   "Not started". Fixed by redoing the edits with the editor tool and checking the file
   contents. Lesson: after any edit made by a script, check the file itself, not just that the
   command ran.
+- 2026-11-14 (Claude Code): Prompt: "go ahead with step 2. But remind me how the HMM works."
+  Agent explained the HMM in plain terms, then ported the prototype's math into `core/hmm.js`
+  with three additions the prototype lacked: forward returns scale factors, test 1 checks the
+  un-normalized alphas, and test 2 checks that Viterbi's path is one of the brute-force best
+  paths (not just that the probability matches).
+  [EPISODE] Verification of the tests themselves: the agent swapped A[j][s] to A[s][j] in the
+  forward step on purpose. Tests 1, 2 and 5 failed as they should; test 4 and live-vs-batch
+  still passed, which is expected (the broken version still gives valid probabilities, and
+  live and batch share the same broken step). Reverted and confirmed all green. Shows the
+  tests can catch a realistic indexing bug.

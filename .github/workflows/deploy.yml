@@ -25,6 +25,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Run the HMM tests (stop the deploy if any fail)
+        run: node tests/run_node.mjs
       - name: Assemble the published folder
         run: bash scripts/build-pages.sh
       - uses: actions/upload-pages-artifact@v3

@@ -1,9 +1,50 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HMM Tests</title></head>
-<body style="font-family: system-ui, sans-serif; max-width: 48rem; margin: 2rem auto; padding: 0 1rem;">
-<h1>Correctness tests</h1>
-<p>No tests yet. SPEC tests 1, 2, 4 and 5 are added in checkpoint step 2, and test 7 in step 4.</p>
-<p><a href="./">Back to the site</a></p>
-</body></html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HMM Tests</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 52rem; margin: 2rem auto; padding: 0 1rem;
+      color: #1d2733; background: #fbfaf7; line-height: 1.45; }
+    li { margin: 0.6rem 0; list-style: none; }
+    .tag { display: inline-block; width: 3.4rem; font-weight: 700; }
+    .pass { color: #1f7a3a; } .fail { color: #b3261e; }
+    .detail { color: #5a6573; font-size: 0.88rem; margin-left: 3.4rem; }
+    #summary { font-weight: 700; }
+    ul { padding: 0; }
+  </style>
+</head>
+<body>
+  <h1>Correctness tests</h1>
+  <p>These run SPEC Section 14 tests in your browser, using the same <code>core/</code> files the
+    site uses. The converter test (test 7) is added in checkpoint step 4.</p>
+  <p id="summary">Running…</p>
+  <ul id="results"></ul>
+  <p><a href="./">Back to the site</a></p>
+
+  <script type="module">
+    import { runHmmTests } from "./tests/hmm_tests.js";
+
+    const list = document.getElementById("results");
+    const summary = document.getElementById("summary");
+    try {
+      const results = runHmmTests();
+      for (const r of results) {
+        const li = document.createElement("li");
+        li.innerHTML = `<span class="tag ${r.pass ? "pass" : "fail"}">${r.pass ? "PASS" : "FAIL"}</span>` +
+          `${r.name}<div class="detail"></div>`;
+        li.querySelector(".detail").textContent = r.detail;
+        list.appendChild(li);
+      }
+      const failed = results.filter((r) => !r.pass).length;
+      summary.textContent = failed === 0 ? `All ${results.length} tests passed.` : `${failed} of ${results.length} tests FAILED.`;
+      summary.className = failed === 0 ? "pass" : "fail";
+    } catch (err) {
+      // A crash (e.g. a file failed to load) is shown as a failure, not a blank page.
+      summary.textContent = "Tests crashed: " + err.message;
+      summary.className = "fail";
+    }
+  </script>
+</body>
+</html>
