@@ -8,8 +8,10 @@ import { CONFIG, OPTIONS } from "../core/config.js";
 
 const SECTIONS = ["about", "faq", "participate", "contact"];
 
-export function createRecorder({ cardOrder }) {
+export function createRecorder({ cardOrder, onEvent = null }) {
   const log = [];
+  // Every event goes through here; onEvent (demo mode only) gets a copy as it happens.
+  const record = (ev) => { log.push(ev); if (onEvent) onEvent(ev); };
   let t0 = null;          // performance.now() when recording started
   let active = false;
   let lastMouse = -Infinity;
@@ -30,7 +32,7 @@ export function createRecorder({ cardOrder }) {
   };
 
   function logLayout() {
-    log.push({
+    record({
       type: "layout", t: now(),
       w: window.innerWidth, h: window.innerHeight,
       scrollY: Math.round(window.scrollY),
@@ -45,7 +47,7 @@ export function createRecorder({ cardOrder }) {
     t0 = performance.now();
     active = true;
     logLayout();
-    log.push({ type: "scroll", t: 0, scrollY: Math.round(window.scrollY) });
+    record({ type: "scroll", t: 0, scrollY: Math.round(window.scrollY) });
 
     // Mouse: at most MOUSE_HZ samples per second.
     on(window, "mousemove", (e) => {
@@ -53,13 +55,13 @@ export function createRecorder({ cardOrder }) {
       const t = now();
       if (t - lastMouse < 1000 / CONFIG.MOUSE_HZ) return;
       lastMouse = t;
-      log.push({ type: "mouse", t, clientX: e.clientX, clientY: e.clientY });
+      record({ type: "mouse", t, clientX: e.clientX, clientY: e.clientY });
     });
 
     // Always log the exact pointer position at any click (capture phase, before other handlers).
     on(window, "click", (e) => {
       if (!active) return;
-      log.push({ type: "mouse", t: now(), clientX: e.clientX, clientY: e.clientY });
+      record({ type: "mouse", t: now(), clientX: e.clientX, clientY: e.clientY });
     }, true);
 
     // Scroll: at most SCROLL_HZ samples per second.
@@ -67,20 +69,20 @@ export function createRecorder({ cardOrder }) {
       const t = now();
       if (t - lastScroll < 1000 / CONFIG.SCROLL_HZ) return;
       lastScroll = t;
-      log.push({ type: "scroll", t, scrollY: Math.round(window.scrollY) });
+      record({ type: "scroll", t, scrollY: Math.round(window.scrollY) });
     }, { passive: true });
 
     on(window, "resize", logLayout);
 
     on(document, "visibilitychange", () => {
-      log.push({ type: "visibility", t: now(), hidden: document.hidden });
+      record({ type: "visibility", t: now(), hidden: document.hidden });
     });
 
     // FAQ toggles. Opening/closing a question moves everything below it,
     // so the layout is logged again right after.
     document.querySelectorAll("#faq details").forEach((d) => {
       on(d, "toggle", () => {
-        log.push({ type: "faq", t: now(), faq_id: d.id, open: d.open });
+        record({ type: "faq", t: now(), faq_id: d.id, open: d.open });
         logLayout();
       });
     });
@@ -88,19 +90,25 @@ export function createRecorder({ cardOrder }) {
     // Hovering over a card.
     OPTIONS.forEach((o) => {
       const card = document.getElementById("card-" + o);
-      on(card, "mouseenter", () => log.push({ type: "card_hover", t: now(), option: o, enter: true }));
-      on(card, "mouseleave", () => log.push({ type: "card_hover", t: now(), option: o, enter: false }));
+      on(card, "mouseenter", () => record({ type: "card_hover", t: now(), option: o, enter: true }));
+      on(card, "mouseleave", () => record({ type: "card_hover", t: now(), option: o, enter: false }));
     });
   }
 
   // The choice ends the visit: log it, then stop listening.
   function finish(option) {
     if (!active) return null;
-    log.push({ type: "choice", t: now(), option });
+    record({ type: "choice", t: now(), option });
     active = false;
     listeners.forEach((off) => off());
     return log;
   }
 
-  return { start, finish, isActive: () => active, getLog: () => log, lastPointer: () => pointer };
+  return {
+    start, finish,
+    isActive: () => active,
+    getLog: () => log,
+    lastPointer: () => pointer,
+    elapsed: () => (t0 === null ? 0 : now()),   // ms since "I agree" (for the demo panel's clock)
+  };
 }

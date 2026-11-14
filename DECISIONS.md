@@ -27,4 +27,9 @@ Choices not covered by SPEC.md, one line each with the reason.
 - 2026-11-14: Activity that resets the pause timer = a mouse move over 5 px, a scroll, or an FAQ toggle (the raw log has no generic click event); card hovers and tab visibility don't count.
 - 2026-11-14: Zones and rest are re-checked on scroll and layout events too, because a still pointer can end up over a button when the page moves under it.
 - 2026-11-14: Dominant section = largest share of the viewport height (ties go to the earlier section); the sticky header isn't subtracted.
+- 2026-11-14: The demo panel is loaded with a dynamic `import()` only when `?demo=1`, so outside demo mode its code is never downloaded or run.
+- 2026-11-14: The demo panel is a fixed 300 px overlay (bottom right) and never pushes page content, because moving content would change the layout the recorder measures.
+- 2026-11-14: The panel's chart x-axis is time (not action number), with flat bands between actions; the dashboard will offer the action-number toggle.
+- 2026-11-14: After the click the panel also shows the Viterbi strip and whether the last guess was right, which isn't required but makes demos easier to explain.
+- 2026-11-14: Panel colors match the prototype (grey undecided, teal web, purple AI, amber person).
 - 2026-11-14: `.gitattributes` forces LF endings on `.sh`/`.yml` files, because Windows CRLF endings make bash scripts fail.

@@ -81,7 +81,16 @@ const meta = {
   started_at: null,
 };
 
-const recorder = createRecorder({ cardOrder });
+// Demo mode only: load the live panel. Outside demo mode this file is never even downloaded.
+let demoPanel = null;
+const recorder = createRecorder({
+  cardOrder,
+  onEvent: isDemo ? (ev) => demoPanel && demoPanel.onEvent(ev) : null,
+});
+if (isDemo) {
+  const { createDemoPanel } = await import("./demo-panel.js");
+  demoPanel = createDemoPanel({ getElapsed: () => recorder.elapsed() });
+}
 
 // ---------- Flow ----------
 function showNotice() {

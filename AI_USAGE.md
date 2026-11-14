@@ -85,3 +85,9 @@
   that DECISIONS.md rule. Added a case (straight movement toward a button while reading
   About gives no HEAD); the planted bug then failed it, and the real code passed. Lesson: a
   green test suite only means something once you've seen it go red.
+- 2026-11-14 (Claude Code): Prompt: "Go ahead" (step 5). Agent added an event hook to the
+  recorder and `site/demo-panel.js`, which is loaded only with `?demo=1`. It reuses the
+  prototype's panel design but feeds it from the shared `core/` converter and live forward,
+  so there's no second copy of the logic. Caught before shipping: a 340 px panel would have
+  covered the right card at 1440 px wide; narrowed to 300 px. Not verified in a browser by the
+  agent (the owner prefers checking on the live site); owner check pending.
