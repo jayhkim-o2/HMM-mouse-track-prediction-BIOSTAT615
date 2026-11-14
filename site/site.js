@@ -145,15 +145,58 @@ for (const o of OPTIONS) {
     if (!rawLog) return;            // not recording (e.g. clicked twice)
     payload = { ...meta, choice: o, raw_log: rawLog };
 
-    // Backup: keep the visit in localStorage until it's confirmed sent (step 6).
-    const saved = storeSet("smip_pending_" + meta.visit_id, JSON.stringify(payload));
-    $("sendStatus").textContent = saved
-      ? "Your recording is saved in this browser. Sending to the project sheet isn't set up yet, so you can download it below."
-      : "Sending to the project sheet isn't set up yet, so please download your recording below.";
-    $("download").hidden = false;
+    // Backup first: keep the visit in localStorage until the Sheet confirms it.
+    const body = JSON.stringify(payload);
+    storeSet(PENDING_PREFIX + meta.visit_id, body);
+    $("sendStatus").textContent = "Saving your recording…";
+    $("download").hidden = true;
     $("thanks").hidden = false;
+
+    sendVisit(body).then((ok) => {
+      if (ok) {
+        storeRemove(PENDING_PREFIX + meta.visit_id);
+        $("sendStatus").textContent = "Your recording was saved. You can close this tab.";
+      } else {
+        $("sendStatus").textContent =
+          "We couldn't save your recording to the project sheet. Please download it and send it to the project owner.";
+        $("download").hidden = false;
+      }
+    });
   });
 }
+
+// ---------- Sending (SPEC Section 10) ----------
+const PENDING_PREFIX = "smip_pending_";
+function storeRemove(key) { try { localStorage.removeItem(key); } catch { /* blocked storage: nothing to remove */ } }
+
+// POST one visit to the Apps Script receiver. Resolves true only on {"ok": true}.
+// No custom headers: the default text/plain content type avoids a CORS preflight,
+// which Apps Script can't answer. Gives up after SEND_TIMEOUT_MS.
+async function sendVisit(body) {
+  if (!CONFIG.APPS_SCRIPT_URL) return false;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), CONFIG.SEND_TIMEOUT_MS);
+  try {
+    const res = await fetch(CONFIG.APPS_SCRIPT_URL, { method: "POST", body, signal: controller.signal });
+    const reply = await res.json();
+    return reply && reply.ok === true;
+  } catch {
+    return false;          // network error, timeout, or a reply that isn't JSON
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// On page load, quietly retry any earlier visits from this browser that never got an "ok".
+async function resendPending() {
+  let keys = [];
+  try { keys = Object.keys(localStorage).filter((k) => k.startsWith(PENDING_PREFIX)); } catch { return; }
+  for (const key of keys) {
+    const body = storeGet(key);
+    if (body && (await sendVisit(body))) storeRemove(key);
+  }
+}
+resendPending();
 
 // "Download my recording": saves the same JSON that will be sent.
 $("download").addEventListener("click", () => {

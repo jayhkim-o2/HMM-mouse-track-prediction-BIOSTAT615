@@ -12,7 +12,7 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 | 3 | Mock study site + recorder + download backup | Working | Owner's live role-play visit recorded and downloaded correctly |
 | 4 | Mouse-intent module + action converter + test 7 | Working | Owner's intent model ported; 6 converter cases + stream = batch pass in Node and on live `tests.html` |
 | 5 | Live demo panel (`?demo=1`) | Working | Owner ran live `?demo=1` visits; probabilities moved sensibly |
-| 6 | Saving visits to Google Sheet | Not started | |
+| 6 | Saving visits to Google Sheet | Not working | Receiver deployed and validated; first real site visit → Sheet row not yet confirmed |
 | 7 | Simulated visitors (type 1, type 2) + recovery analysis | Not started | |
 | 8 | Researcher dashboard | Not started | |
 | 9 | Evaluation vs baselines; learned model (EM) | Not started | After checkpoint |
@@ -52,4 +52,10 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
   demo visit exposed a recorder throttle bug (lost final scroll position; fixed). Owner set
   PAUSE to 3 s. Second demo visit: the probabilities moved sensibly, and the click falls
   inside the logged button position (that visit still ran the cached config v1).
+- 2026-11-14: Step 6. `apps-script/Code.gs` written; owner deployed it. Setup problems along
+  the way: an empty first deployment, a stray library in the project, and access limited to
+  signed-in users (the URL redirected to a login page). Checked: GET from a logged-out client
+  returns ok; invalid project code and non-JSON posts are rejected. Site now sends with a
+  10 s timeout, keeps a localStorage backup until "ok", shows the download button on
+  failure, and retries pending visits on the next load. Next: owner test visit → Sheet row.
   Next: step 4 (intent + converter + test 7).

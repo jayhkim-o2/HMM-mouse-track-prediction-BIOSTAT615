@@ -41,7 +41,8 @@ export const CONFIG = {
   CHUNK_CHARS: 45000,
   PROJECT_CODE: "BIOSTAT615-SMIP",
   SCHEMA_VERSION: 1,
-  APPS_SCRIPT_URL: "",      // paste the deployed Apps Script web app URL here (step 6)
+  // Owner's deployed Apps Script web app (receives visits; anyone can POST, nobody can read).
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbygutUgsi9fiNWfFyes4gj-jA0fLnBfWeReQKQQFnVm2FFyJk5i61lkzDMqrA65BFFx/exec",
 
   // --- Notice placeholders (fill in before real visits) ---
   COURSE: "[COURSE]",

@@ -118,3 +118,11 @@
   visitors and the site's fetch would be blocked. Caught before any visit was "saved" into
   nowhere. Next: owner sets access to Anyone (or uses a personal Gmail), pastes the code, and
   redeploys.
+- 2026-11-14 (Claude Code): Step 6 setup took several rounds. A stray library in the owner's
+  Apps Script project caused a permission error (not from the agent's code; removed). The
+  web app then still redirected logged-out users to a login page until the owner changed
+  the access setting. The agent checked each attempt from a logged-out client instead of
+  trusting the editor. One wrong turn by the agent: its first rejection test returned
+  "411 Length Required". That came from the test command (`curl -X POST -L` re-POSTs on the
+  redirect without a body), not from the script; rerun correctly, both bad posts were
+  rejected. Then wired the site's send + backup + retry.

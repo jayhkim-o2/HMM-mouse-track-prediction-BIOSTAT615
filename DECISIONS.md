@@ -37,4 +37,9 @@ Choices not covered by SPEC.md, one line each with the reason.
 - 2026-11-14: At every click the recorder also logs the scroll position if it changed, alongside the pointer sample.
 - 2026-11-14: Every visit starts scrolled to the top (`history.scrollRestoration = "manual"`), so a reload can't start a visitor halfway down the page.
 - 2026-11-14: In demo mode, pointer movement over the live panel is recorded like any other; that's acceptable because demo visits are excluded from analysis.
+- 2026-11-14: The receiver also checks `mode`, `choice`, `visit_id` length and that `raw_log` is a list, so junk posts that happen to have the right project code are still rejected.
+- 2026-11-14: The receiver skips a `visit_id` it has already saved and still replies ok, so a retry after a lost reply never creates duplicate rows.
+- 2026-11-14: The receiver formats new cells as plain text before writing, so Sheets never turns a JSON chunk into a number or date.
+- 2026-11-14: The site retries any `smip_pending_*` visits on the next page load, so a visit whose send failed still reaches the Sheet later.
+- 2026-11-14: The Apps Script URL is committed in `config.js`; it's write-only (anyone can POST a valid visit, nobody can read the Sheet through it), and the site has to know it anyway.
 - 2026-11-14: `.gitattributes` forces LF endings on `.sh`/`.yml` files, because Windows CRLF endings make bash scripts fail.
