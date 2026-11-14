@@ -8,7 +8,7 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 | # | Step | Status | Note |
 |---|------|--------|------|
 | 1 | Repo setup, docs, GitHub Pages deploy | Working | Live URL loads; Actions deploy succeeds |
-| 2 | HMM core (forward, log forward, Viterbi, brute force) + tests 1, 2, 4, 5 | Working | All 5 pass in Node; browser `tests.html` to confirm on live site |
+| 2 | HMM core (forward, log forward, Viterbi, brute force) + tests 1, 2, 4, 5 | Working | All 5 pass in Node and on live `tests.html` |
 | 3 | Mock study site + recorder + download backup | Not started | Working in prototype |
 | 4 | Mouse-intent module + action converter + test 7 | Not started | |
 | 5 | Live demo panel (`?demo=1`) | Not started | |

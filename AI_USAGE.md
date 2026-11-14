@@ -58,3 +58,5 @@
   still passed, which is expected (the broken version still gives valid probabilities, and
   live and batch share the same broken step). Reverted and confirmed all green. Shows the
   tests can catch a realistic indexing bug.
+  Live check: owner first saw the old placeholder (browser cache); after a hard refresh the
+  deployed `tests.html` showed all 5 PASS with the same numbers as Node.
