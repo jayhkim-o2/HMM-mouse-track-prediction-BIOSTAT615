@@ -110,3 +110,11 @@
   current vector is kept), and that Viterbi also uses later evidence. Checked the log: the
   click falls inside the logged Person button position. Noticed `config_version: 1`, meaning
   the browser had cached the pre-change site; owner reminded to hard refresh.
+- 2026-11-14 (Claude Code): Step 6 started. Agent gave Apps Script deploy steps that were too
+  short ("Deploy → Web app"); owner pointed out the menu only shows "New deployment", and that
+  no code had been given yet. Agent wrote `apps-script/Code.gs` and corrected the steps.
+  [EPISODE] The owner had already deployed (empty script) under a UMich account. The agent
+  checked the URL without sending data: it redirected to the UMich login page, so anonymous
+  visitors and the site's fetch would be blocked. Caught before any visit was "saved" into
+  nowhere. Next: owner sets access to Anyone (or uses a personal Gmail), pastes the code, and
+  redeploys.

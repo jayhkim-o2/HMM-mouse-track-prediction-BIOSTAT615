@@ -76,10 +76,18 @@ go to **Settings → Pages → Source: GitHub Actions**.
 
 ## Google Sheet setup (Apps Script) *(coming)*
 
-1. Create a Google Sheet.
-2. Open **Extensions → Apps Script** and paste in `apps-script/Code.gs`.
-3. **Deploy → New deployment → Web app**, with "Execute as: Me" and "Who has access: Anyone".
-4. Copy the web app URL into `APPS_SCRIPT_URL` in `core/config.js`.
+1. Create a Google Sheet. Use an account that can publish public web apps; some university
+   Google accounts only allow "Anyone within [university]", which blocks visitors.
+2. Open **Extensions → Apps Script**, replace the editor contents with `apps-script/Code.gs`,
+   and save.
+3. **Deploy → New deployment**, click the gear next to "Select type" → **Web app**.
+   Set "Execute as: Me" and "Who has access: Anyone", then **Deploy** and authorize (on the
+   "Google hasn't verified this app" screen: Advanced → Go to the project → Allow).
+4. Check it: open the web app URL (ends in `/exec`) in a private window. You should see
+   `{"ok":true,...}`, not a login page.
+5. Copy the URL into `APPS_SCRIPT_URL` in `core/config.js`.
+6. After changing the script later: **Deploy → Manage deployments → edit → Version: New
+   version → Deploy**. The URL stays the same; an un-redeployed edit is not live.
 
 ## Placeholders to fill in
 
