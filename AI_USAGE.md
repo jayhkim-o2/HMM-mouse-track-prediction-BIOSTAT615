@@ -66,6 +66,6 @@
   in `core/`, step 4), layout re-logged after FAQ toggles.
   Wrong turn: the agent wrote an automated headless-Edge click-through test and tried to run
   it on the owner's computer, which needed the command sandbox turned off. The owner declined:
-  they only care that it runs from GitHub. The agent then checked the deployed site instead,
-  and the owner did the click-through on the live URL. Lesson: ask how the owner wants
+  they only care that it runs from GitHub. The agent then checked the deployed files instead;
+  the owner's click-through on the live URL is pending. Lesson: ask how the owner wants
   something verified before setting up heavy local tooling.
