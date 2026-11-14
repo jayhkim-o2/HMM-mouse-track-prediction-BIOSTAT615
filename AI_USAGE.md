@@ -104,3 +104,9 @@
   top. Owner also asked mid-step to change PAUSE from 10 s to 3 s; the agent pointed out the
   side effects (cap is now 9 s; the hand-set emissions assumed 10 s pauses), changed the
   config, and rewrote the SPEC 25 s test to compute its expected count from the config.
+- 2026-11-14 (Claude Code): Owner shared a second demo visit and asked whether earlier states
+  matter. Agent explained that the forward algorithm carries the filtered belief forward
+  through the transitions (0.90 stay is the model's memory), the Markov property (only the
+  current vector is kept), and that Viterbi also uses later evidence. Checked the log: the
+  click falls inside the logged Person button position. Noticed `config_version: 1`, meaning
+  the browser had cached the pre-change site; owner reminded to hard refresh.

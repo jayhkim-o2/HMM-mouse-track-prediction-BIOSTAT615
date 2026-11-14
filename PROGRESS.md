@@ -11,7 +11,7 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 | 2 | HMM core (forward, log forward, Viterbi, brute force) + tests 1, 2, 4, 5 | Working | All 5 pass in Node and on live `tests.html` |
 | 3 | Mock study site + recorder + download backup | Working | Owner's live role-play visit recorded and downloaded correctly |
 | 4 | Mouse-intent module + action converter + test 7 | Working | Owner's intent model ported; 6 converter cases + stream = batch pass in Node and on live `tests.html` |
-| 5 | Live demo panel (`?demo=1`) | Not working | Built and deployed; live check by owner pending |
+| 5 | Live demo panel (`?demo=1`) | Working | Owner ran live `?demo=1` visits; probabilities moved sensibly |
 | 6 | Saving visits to Google Sheet | Not started | |
 | 7 | Simulated visitors (type 1, type 2) + recovery analysis | Not started | |
 | 8 | Researcher dashboard | Not started | |
@@ -48,5 +48,8 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 - 2026-11-14: Step 5. `site/demo-panel.js`: loaded only with `?demo=1`; live converter stream
   (ticked every 100 ms) feeds `createLiveForward`; draws stacked state bands over time, action
   ticks (hover for name), choice-guess bars, action list, and after the click the Viterbi
-  strip with a right/wrong note. Tested: syntax check and all 12 Node tests; live check pending.
+  strip with a right/wrong note. Tested: syntax check and all 12 Node tests. Owner's first
+  demo visit exposed a recorder throttle bug (lost final scroll position; fixed). Owner set
+  PAUSE to 3 s. Second demo visit: the probabilities moved sensibly, and the click falls
+  inside the logged button position (that visit still ran the cached config v1).
   Next: step 4 (intent + converter + test 7).
