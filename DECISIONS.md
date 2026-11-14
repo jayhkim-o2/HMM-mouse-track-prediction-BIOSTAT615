@@ -32,4 +32,9 @@ Choices not covered by SPEC.md, one line each with the reason.
 - 2026-11-14: The panel's chart x-axis is time (not action number), with flat bands between actions; the dashboard will offer the action-number toggle.
 - 2026-11-14: After the click the panel also shows the Viterbi strip and whether the last guess was right, which isn't required but makes demos easier to explain.
 - 2026-11-14: Panel colors match the prototype (grey undecided, teal web, purple AI, amber person).
+- 2026-11-14: Owner changed `PAUSE_MS` from SPEC's 10 s to 3 s (pauses felt too long); `CONFIG_VERSION` bumped to 2. With the max of 3 repeats, one long stillness now counts as at most 9 s of pauses. SPEC test 7's "25 s still gives 2 PAUSEs" now works out its expected count from the config (3 at 3 s).
+- 2026-11-14: Mouse and scroll throttling keep a trailing sample (one catch-up sample at the end of each 100 ms gap), because plain throttling dropped the final scroll position (found in the owner's demo visit: the log was ~80 px off at the click).
+- 2026-11-14: At every click the recorder also logs the scroll position if it changed, alongside the pointer sample.
+- 2026-11-14: Every visit starts scrolled to the top (`history.scrollRestoration = "manual"`), so a reload can't start a visitor halfway down the page.
+- 2026-11-14: In demo mode, pointer movement over the live panel is recorded like any other; that's acceptable because demo visits are excluded from analysis.
 - 2026-11-14: `.gitattributes` forces LF endings on `.sh`/`.yml` files, because Windows CRLF endings make bash scripts fail.

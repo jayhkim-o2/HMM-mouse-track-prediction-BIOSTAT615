@@ -91,3 +91,16 @@
   so there's no second copy of the logic. Caught before shipping: a 340 px panel would have
   covered the right card at 1440 px wide; narrowed to 300 px. Not verified in a browser by the
   agent (the owner prefers checking on the live site); owner check pending.
+- 2026-11-14 (Claude Code): Owner shared a downloaded `?demo=1` visit. Reading the log, the
+  agent noticed the click was at client y = 720 but the logged scroll position put the Web
+  button at y = 801-854, which is impossible.
+  [EPISODE] Bug found from real data: the recorder's throttle dropped any scroll event within
+  100 ms of the previous one, including the last one when the page came to rest. So the logged
+  scroll position (1099) was about 80 px short of the real one (about 1180, the bottom of the
+  page). The same flaw hit mouse samples. None of the tests could catch it, because they start
+  from hand-made logs and never exercise the recorder. Fixed with a throttle that keeps a
+  trailing sample, plus a scroll sample at every click. Also: the visit started at
+  scrollY 1104 because the browser restored the old position; every visit now starts at the
+  top. Owner also asked mid-step to change PAUSE from 10 s to 3 s; the agent pointed out the
+  side effects (cap is now 9 s; the hand-set emissions assumed 10 s pauses), changed the
+  config, and rewrote the SPEC 25 s test to compute its expected count from the config.

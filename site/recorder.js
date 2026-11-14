@@ -14,8 +14,6 @@ export function createRecorder({ cardOrder, onEvent = null }) {
   const record = (ev) => { log.push(ev); if (onEvent) onEvent(ev); };
   let t0 = null;          // performance.now() when recording started
   let active = false;
-  let lastMouse = -Infinity;
-  let lastScroll = -Infinity;
   let pointer = null;     // latest pointer position, so we can log it at clicks
   const listeners = [];   // so stop() can remove everything it added
 
@@ -30,6 +28,32 @@ export function createRecorder({ cardOrder, onEvent = null }) {
     const r = el.getBoundingClientRect();
     return { x: r.left + window.scrollX, y: r.top + window.scrollY, w: r.width, h: r.height };
   };
+
+  let lastScrollY = null;   // the scroll position most recently written to the log
+  function logScroll(t = now()) {
+    lastScrollY = Math.round(window.scrollY);
+    record({ type: "scroll", t, scrollY: lastScrollY });
+  }
+
+  // Rate limiter that keeps the LAST sample. Plain throttling (drop anything within
+  // `gapMs` of the previous sample) loses the final position when movement stops, so
+  // the log can end up showing the page or pointer where it was ~100 ms earlier.
+  // Here a skipped event schedules one catch-up sample at the end of the gap instead.
+  function throttleWithTrailing(gapMs, sample) {
+    let last = -Infinity;
+    let timer = null;
+    const take = () => { last = now(); sample(last); };
+    return () => {
+      if (!active) return;
+      const wait = gapMs - (now() - last);
+      if (wait <= 0) {
+        if (timer) { clearTimeout(timer); timer = null; }
+        take();
+      } else if (!timer) {
+        timer = setTimeout(() => { timer = null; if (active) take(); }, wait);
+      }
+    };
+  }
 
   function logLayout() {
     record({
@@ -47,30 +71,29 @@ export function createRecorder({ cardOrder, onEvent = null }) {
     t0 = performance.now();
     active = true;
     logLayout();
-    record({ type: "scroll", t: 0, scrollY: Math.round(window.scrollY) });
+    logScroll(0);
 
-    // Mouse: at most MOUSE_HZ samples per second.
+    // Mouse: at most MOUSE_HZ samples per second, and the final resting position is never lost.
+    const sampleMouse = throttleWithTrailing(1000 / CONFIG.MOUSE_HZ, (t) => {
+      record({ type: "mouse", t, clientX: pointer.x, clientY: pointer.y });
+    });
     on(window, "mousemove", (e) => {
       pointer = { x: e.clientX, y: e.clientY };
-      const t = now();
-      if (t - lastMouse < 1000 / CONFIG.MOUSE_HZ) return;
-      lastMouse = t;
-      record({ type: "mouse", t, clientX: e.clientX, clientY: e.clientY });
+      sampleMouse();
     });
 
-    // Always log the exact pointer position at any click (capture phase, before other handlers).
+    // Scroll: at most SCROLL_HZ samples per second, same trailing rule.
+    const sampleScroll = throttleWithTrailing(1000 / CONFIG.SCROLL_HZ, logScroll);
+    on(window, "scroll", sampleScroll, { passive: true });
+
+    // At any click, log the exact scroll position (if it changed) and pointer position
+    // (capture phase, so this runs before the button's own click handler).
     on(window, "click", (e) => {
       if (!active) return;
-      record({ type: "mouse", t: now(), clientX: e.clientX, clientY: e.clientY });
-    }, true);
-
-    // Scroll: at most SCROLL_HZ samples per second.
-    on(window, "scroll", () => {
       const t = now();
-      if (t - lastScroll < 1000 / CONFIG.SCROLL_HZ) return;
-      lastScroll = t;
-      record({ type: "scroll", t, scrollY: Math.round(window.scrollY) });
-    }, { passive: true });
+      if (Math.round(window.scrollY) !== lastScrollY) logScroll(t);
+      record({ type: "mouse", t, clientX: e.clientX, clientY: e.clientY });
+    }, true);
 
     on(window, "resize", logLayout);
 

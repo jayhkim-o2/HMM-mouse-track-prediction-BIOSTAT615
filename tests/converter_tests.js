@@ -3,6 +3,7 @@
 // like the site) to check it gives exactly the same actions as the batch converter.
 
 import { convertBatch, createConverterStream } from "../core/converter.js";
+import { CONFIG } from "../core/config.js";
 
 // A fixed page at 1440 x 900, in page coordinates {x, y, w, h}.
 // Participate's buttons sit at page y 2330-2380, so at scrollY = 1700 they are at
@@ -99,15 +100,22 @@ const CASES = [];
   });
 }
 
-// 3. 25 seconds without moving: PAUSE at 10 s and 20 s, so exactly 2.
+// 3. 25 seconds without moving. SPEC wrote this for PAUSE_MS = 10 s (PAUSEs at 10 s and 20 s,
+// so exactly 2). The owner later set PAUSE_MS = 3 s, so the expected count is worked out from
+// the config: one PAUSE per full PAUSE_MS, at most PAUSE_MAX_REPEAT.
 {
   const log = [...start(), mouse(0, 700, 400), choice(25000, "web")];
+  const expected = Math.min(Math.floor((25000 - 1) / CONFIG.PAUSE_MS), CONFIG.PAUSE_MAX_REPEAT);
+  const expectedTimes = Array.from({ length: expected }, (_, i) => (i + 1) * CONFIG.PAUSE_MS);
   CASES.push({
-    name: "25 s still gives exactly 2 PAUSEs",
+    name: `25 s still gives exactly ${expected} PAUSEs (PAUSE_MS = ${CONFIG.PAUSE_MS / 1000} s, max ${CONFIG.PAUSE_MAX_REPEAT})`,
     log,
     check: (acts) => {
-      const pauses = acts.filter((a) => a.symbol === "PAUSE");
-      return { pass: pauses.length === 2, detail: `${pauses.length} PAUSE at t = ${pauses.map((a) => a.t).join(", ")} ms` };
+      const times = acts.filter((a) => a.symbol === "PAUSE").map((a) => a.t);
+      return {
+        pass: times.join(",") === expectedTimes.join(","),
+        detail: `PAUSE at t = ${times.join(", ")} ms; expected ${expectedTimes.join(", ")}`,
+      };
     },
   });
 }

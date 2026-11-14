@@ -8,6 +8,11 @@ import { createRecorder } from "./recorder.js";
 
 const $ = (id) => document.getElementById(id);
 
+// Every visit starts at the top of the page. Without this, a reload keeps the old scroll
+// position, so some visitors would start halfway down at Participate.
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+window.scrollTo(0, 0);
+
 // ---------- URL parameters ----------
 const params = new URLSearchParams(location.search);
 const rawPid = (params.get("pid") || "").toUpperCase();

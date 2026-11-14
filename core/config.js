@@ -3,11 +3,11 @@
 
 export const CONFIG = {
   // Bump this whenever a value below changes; every visit records it.
-  CONFIG_VERSION: 1,
+  CONFIG_VERSION: 2,        // v2: PAUSE_MS 10000 -> 3000 (owner, 2026-11-14)
 
   // --- Turning raw events into actions (SPEC Section 6.2) ---
   SECTION_DWELL_MS: 2000,   // a section must fill most of the screen this long to count as viewed
-  PAUSE_MS: 10000,          // this long with no activity = one PAUSE action
+  PAUSE_MS: 3000,           // this long with no activity = one PAUSE action (SPEC said 10000; owner chose 3000)
   PAUSE_MAX_REPEAT: 3,      // at most this many PAUSEs in a row for one long pause
   PAUSE_MOVE_PX: 5,         // mouse moves smaller than this don't end a pause
   ZONE_PX: 150,             // pointer this close to a button = entered its zone
