@@ -20,16 +20,10 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 
 ## Questions for the instructor (checkpoint doc, Section 2)
 
-1. **Pause length:** SPEC set a PAUSE action at 10 s of no activity; after trying the site I
-   changed it to 3 s. My hand-set emission probabilities were picked with the 10 s rule in
-   mind. Should I re-tune them, or let the learned model (EM) handle it?
-2. **Open data receiver:** the Apps Script receiver has to accept posts from anyone (visitors
-   aren't signed in). It validates each post, but someone could still send fake well-formed
-   visits. Is relying on participant codes and filtering at export time enough for a class
-   project?
-3. **Small real sample:** 3–5 volunteers × ~5 role-play visits each, so most comparisons rest
-   on simulated visitors. Is that balance OK, and how much weight should the real visits
-   carry in the report?
+None.
+
+(Only questions the owner genuinely wants the instructor's input on go here; design calls
+the owner can make are recorded in DECISIONS.md instead.)
 
 ## Work log
 

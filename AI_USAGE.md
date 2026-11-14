@@ -129,3 +129,9 @@
   Verified: owner's live demo visit on the deployed site showed "Your recording was saved"
   (the receiver replies ok only after writing the rows). Owner asked to confirm the row in
   the Sheet.
+- 2026-11-14 (Claude Code): Checkpoint doc prep. The agent drafted instructor questions for
+  Section 2 (pause length, open receiver, sample size). The owner pushed back: these were
+  their own design decisions, not real questions. The agent agreed, recommended "None"
+  (allowed by the checkpoint), and recorded the three calls in DECISIONS.md instead.
+  Lesson: an agent told to "collect questions" can turn decisions into questions; the owner
+  decides what is actually worth asking.
