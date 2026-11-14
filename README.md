@@ -99,11 +99,25 @@ right. **Hide** collapses the panel.
 
 `/dashboard/` will show recorded and simulated visits.
 
-## How correctness is checked *(coming)*
+## How correctness is checked
 
-`tests.html` runs the tests from SPEC Section 14 in the browser: a hand-worked example,
-brute-force comparison on 500 random models, sanity checks, 2,000-step underflow test, and
-converter tests. Results will be recorded here.
+The same tests run in two places: in the browser at
+[`tests.html`](https://jayhkim-o2.github.io/HMM-mouse-track-prediction-BIOSTAT615/tests.html),
+and in the terminal with `node tests/run_node.mjs`. The deploy workflow also runs them on
+every push and stops the deploy if any fail. All 12 pass (as of 2026-11-14):
+
+| SPEC test | What it checks | Result |
+|---|---|---|
+| 1. Hand-worked example | 2-state model, observations x, y, x: forward values α, P(obs) = 0.10893, filtered P(A) = 0.87097, 0.19617, 0.79234, Viterbi path A, B, A with probability 0.046656 | Pass |
+| 2. Brute force | 500 random 4-state, 16-symbol models, lengths 1–5: forward and Viterbi match listing every path | Pass (worst relative error 5 × 10⁻¹⁵) |
+| 4. Sanity | Every filtered vector sums to 1 with no negatives or NaN; broken models are rejected | Pass (4,067 vectors; 3 of 3 broken models rejected) |
+| 5. Long sequences | 2,000 steps: rescaled and log-space forward agree; an unscaled forward underflows to 0 | Pass (max difference 5 × 10⁻¹¹) |
+| (live) | The live, one-action-at-a-time forward matches the batch version exactly | Pass |
+| 7. Converter | Hand-made raw logs with exact expected actions: straight onto a button, zig-zag with SWITCH, staying still (PAUSE count from the config), fast scroll past About, the click is never an action, no HEAD while buttons are off screen; streaming = batch | Pass (7 checks) |
+
+The tests themselves were checked by planting bugs on purpose (e.g. swapping the transition
+matrix's rows and columns) and confirming that tests fail; see [AI_USAGE.md](AI_USAGE.md).
+Still to come: the independent Python cross-check (test 3) and the recovery analysis (test 6).
 
 ## Run it locally from a fresh clone
 
