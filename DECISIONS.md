@@ -19,4 +19,12 @@ Choices not covered by SPEC.md, one line each with the reason.
 - 2026-11-14: `pid` values outside `P1`–`P9` are ignored (recorded as null), so typos never create stray participant IDs.
 - 2026-11-14: Persona no-repeat is tracked per `pid` in localStorage, and restarts once all personas have been used.
 - 2026-11-14: Until sending exists (step 6), every finished visit shows "Download my recording" and stays in localStorage under `smip_pending_<visit_id>`.
+- 2026-11-14: `core/intent.js` is the owner's demo model, not the SPEC fallback, with the demo's slider defaults (κ = 2, stay 0.98, closeness 1, τ = 150 px, 3 px minimum move) moved into `config.js`.
+- 2026-11-14: Time-based rules (section dwell, pause, head sustain, rest) are deadlines that fire at their exact time, so `convertStream` and `convertBatch` agree no matter how often the stream is ticked.
+- 2026-11-14: The stream has a `tick(t)` method; the site calls it about every 100 ms so a PAUSE shows up live even when no events arrive.
+- 2026-11-14: Actions at exactly the choice time are dropped too (only actions strictly before the click count), so a pointer sample logged at the click can't create an action.
+- 2026-11-14: Same-time actions are held back until time moves on, then released in the SPEC order; live actions can arrive up to one tick late.
+- 2026-11-14: Activity that resets the pause timer = a mouse move over 5 px, a scroll, or an FAQ toggle (the raw log has no generic click event); card hovers and tab visibility don't count.
+- 2026-11-14: Zones and rest are re-checked on scroll and layout events too, because a still pointer can end up over a button when the page moves under it.
+- 2026-11-14: Dominant section = largest share of the viewport height (ties go to the earlier section); the sticky header isn't subtracted.
 - 2026-11-14: `.gitattributes` forces LF endings on `.sh`/`.yml` files, because Windows CRLF endings make bash scripts fail.

@@ -20,7 +20,8 @@
   same SPEC tests: hand-worked example, brute force on 500 random models, sanity/validation,
   2,000-step scaled-vs-log agreement, live-vs-batch.
 - The tests were checked by planting a bug and confirming they fail.
-- Still to come: converter tests (test 7), Python cross-check (test 3).
+- Converter (test 7): hand-made raw logs with exact expected actions, plus stream = batch.
+- Still to come: Python cross-check (test 3).
 
 ## Reflection
 (write at the end)
@@ -71,5 +72,16 @@
   checked field by field (metadata, card order, layout after FAQ toggles, choice last).
   [EPISODE] Caught by the owner, not the agent: a large empty gap under About. The agent had
   carried over the prototype's `#about { min-height: 85vh }`; on the owner's 1209 px-tall
-  window that stretched four paragraphs to ~1030 px. Fixed by removing the rule. Lesson: ask how the owner wants
+  window that stretched four paragraphs to ~1030 px. Fixed by removing the rule. (Lesson for
+  the click-through above:) ask how the owner wants
   something verified before setting up heavy local tooling.
+- 2026-11-14 (Claude Code): Prompt: "Go ahead" (step 4). Agent read the owner's
+  `cursor_intent_demo.html`, explained it as a small HMM over "which button is aimed at", and
+  ported it into `core/intent.js` with the demo's slider defaults. Wrote `core/converter.js`
+  around exact-time deadlines so the live stream and the batch version can't disagree.
+  [EPISODE] Tests that passed too easily: all converter tests passed on the first run, so the
+  agent planted two bugs. Letting actions through at the click time was caught. Leaving the
+  intent module on while the buttons are off screen was NOT caught, because no test covered
+  that DECISIONS.md rule. Added a case (straight movement toward a button while reading
+  About gives no HEAD); the planted bug then failed it, and the real code passed. Lesson: a
+  green test suite only means something once you've seen it go red.

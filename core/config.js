@@ -16,9 +16,12 @@ export const CONFIG = {
   HEAD_THRESHOLD: 0.6,      // intent probability needed for a HEAD action
   HEAD_SUSTAIN_MS: 500,     // ...held for this long
 
-  // Intent module (fallback version settings; SPEC Section 6.3)
-  INTENT_TAU: 150,          // distance scale in pixels
+  // Intent module (owner's demo, ported; SPEC Section 6.3). Defaults = the demo's sliders.
   INTENT_KAPPA: 2,          // weight on "moving toward the button"
+  INTENT_STAY: 0.98,        // chance the aimed-at button stays the same between movements
+  INTENT_CLOSENESS: 1,      // weight on "close to the button"
+  INTENT_TAU: 150,          // distance scale in pixels
+  INTENT_MIN_MOVE_PX: 3,    // shorter movements have no reliable direction and are skipped
 
   // --- Recording rates ---
   MOUSE_HZ: 10,

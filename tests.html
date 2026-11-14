@@ -18,18 +18,19 @@
 <body>
   <h1>Correctness tests</h1>
   <p>These run SPEC Section 14 tests in your browser, using the same <code>core/</code> files the
-    site uses. The converter test (test 7) is added in checkpoint step 4.</p>
+    site uses: tests 1, 2, 4, 5 (HMM) and 7 (action converter).</p>
   <p id="summary">Running…</p>
   <ul id="results"></ul>
   <p><a href="./">Back to the site</a></p>
 
   <script type="module">
     import { runHmmTests } from "./tests/hmm_tests.js";
+    import { runConverterTests } from "./tests/converter_tests.js";
 
     const list = document.getElementById("results");
     const summary = document.getElementById("summary");
     try {
-      const results = runHmmTests();
+      const results = [...runHmmTests(), ...runConverterTests()];
       for (const r of results) {
         const li = document.createElement("li");
         li.innerHTML = `<span class="tag ${r.pass ? "pass" : "fail"}">${r.pass ? "PASS" : "FAIL"}</span>` +

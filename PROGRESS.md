@@ -10,7 +10,7 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 | 1 | Repo setup, docs, GitHub Pages deploy | Working | Live URL loads; Actions deploy succeeds |
 | 2 | HMM core (forward, log forward, Viterbi, brute force) + tests 1, 2, 4, 5 | Working | All 5 pass in Node and on live `tests.html` |
 | 3 | Mock study site + recorder + download backup | Working | Owner's live role-play visit recorded and downloaded correctly |
-| 4 | Mouse-intent module + action converter + test 7 | Not started | |
+| 4 | Mouse-intent module + action converter + test 7 | Working | Owner's intent model ported; 6 converter cases + stream = batch pass in Node |
 | 5 | Live demo panel (`?demo=1`) | Not started | |
 | 6 | Saving visits to Google Sheet | Not started | |
 | 7 | Simulated visitors (type 1, type 2) + recovery analysis | Not started | |
@@ -40,4 +40,9 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
   "Download my recording". Owner did a live `?rp=1&pid=P1` visit; the downloaded JSON had
   correct metadata, shuffled card order, layout after each FAQ toggle, and the choice last.
   Owner spotted a big empty gap under About: a leftover `min-height: 85vh` rule; removed.
+- 2026-11-14: Step 4. `core/intent.js` (owner's cursor-intent HMM ported, demo's default
+  settings) and `core/converter.js` (batch + stream, deadline-based so both agree exactly).
+  Test 7 in `tests/converter_tests.js`: the 5 SPEC cases, one extra case (no HEAD while
+  buttons are off screen), and stream = batch. Tested: all 12 tests pass in Node; two planted
+  bugs checked (the second was missed until the extra case was added). Next: step 5 (`?demo=1`).
   Next: step 4 (intent + converter + test 7).
