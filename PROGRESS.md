@@ -30,9 +30,6 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 3. **Small real sample:** 3–5 volunteers × ~5 role-play visits each, so most comparisons rest
    on simulated visitors. Is that balance OK, and how much weight should the real visits
    carry in the report?
-4. **Hosting on a university account:** UMich Google accounts seemed to block public web apps
-   at first. Is a personal Google account acceptable for collecting class-project data, or
-   should I stay on UMich?
 
 ## Work log
 
