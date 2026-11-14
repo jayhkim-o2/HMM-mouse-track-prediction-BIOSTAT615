@@ -9,7 +9,7 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 |---|------|--------|------|
 | 1 | Repo setup, docs, GitHub Pages deploy | Working | Live URL loads; Actions deploy succeeds |
 | 2 | HMM core (forward, log forward, Viterbi, brute force) + tests 1, 2, 4, 5 | Working | All 5 pass in Node and on live `tests.html` |
-| 3 | Mock study site + recorder + download backup | Not started | Working in prototype |
+| 3 | Mock study site + recorder + download backup | Not working | Built and deployed; live click-through not yet confirmed |
 | 4 | Mouse-intent module + action converter + test 7 | Not started | |
 | 5 | Live demo panel (`?demo=1`) | Not started | |
 | 6 | Saving visits to Google Sheet | Not started | |
@@ -34,3 +34,8 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
   (also run by the deploy workflow). Tested: tests 1, 2, 4, 5 and live-vs-batch all pass in
   Node; a deliberately broken forward step made tests 1, 2, 5 fail, then was reverted.
   Next: step 3 (study site).
+- 2026-11-14: Step 3. Built `site/` (index.html, styles.css, site.js, recorder.js): all
+  sections, banner, notice with config placeholders, desktop check, `?rp=1` persona screen,
+  shuffled cards, raw recorder (SPEC 6.1 events), thank-you overlay, localStorage backup and
+  "Download my recording". Not yet tested by clicking through; to be checked on the live site.
+  Next: step 4 (intent + converter + test 7).

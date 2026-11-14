@@ -4,15 +4,104 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lakeshore Daily Life Study</title>
+  <!-- This file is published as the site's root index.html, so paths start at the root. -->
   <link rel="stylesheet" href="./site/styles.css">
 </head>
 <body>
-  <!-- The fixed banner required by SPEC Section 2. It must be on every page. -->
-  <div class="banner">This is a fake study created for a class project. No real survey will be conducted.</div>
+  <div class="top">
+    <!-- Required on every page (SPEC Section 2). -->
+    <div class="banner">This is a fake study created for a class project. No real survey will be conducted.</div>
+    <header class="site">
+      <div class="hwrap">
+        <div class="word">Lakeshore Daily Life Study<small>A mock study site for a class project</small></div>
+        <nav>
+          <a href="#about">About</a><a href="#faq">FAQ</a><a href="#participate">Participate</a><a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+  </div>
+
   <main>
-    <h1>Lakeshore Daily Life Study</h1>
-    <p>Placeholder page. The full mock study site is built in checkpoint step 3.</p>
-    <p><a href="./tests.html">Tests</a> · <a href="./dashboard/">Dashboard</a></p>
+    <section class="sec" id="about">
+      <h1>Welcome to the Lakeshore Daily Life Study</h1>
+      <p>The Lakeshore Daily Life Study is an imaginary project about how people spend an ordinary day: where their time goes, who they talk to, and what makes a day feel good or hard.</p>
+      <p>We would ask adults from many backgrounds about routines, sleep, work, family, and the small things that shape a week. Every answer would help build a fuller picture of daily life in lakeside towns.</p>
+      <p>In a real study, this is where you would read about the team, the funding, and why the project matters. Here it is placeholder text, so the page has something to read and scroll past.</p>
+      <p>When you're ready, look through the questions below or go straight to Participate to choose how you would like to take part.</p>
+    </section>
+
+    <section class="sec" id="faq">
+      <h2>Frequently asked questions</h2>
+      <!-- Each question has a stable ID. These are deliberately NOT about the three modes. -->
+      <details id="faq-01"><summary>What is this study about?</summary><p>Everyday routines and wellbeing. On this mock site, nothing is actually collected about you.</p></details>
+      <details id="faq-02"><summary>Who can join?</summary><p>In the pretend version, any adult living near the lakeshore region.</p></details>
+      <details id="faq-03"><summary>How long does it take?</summary><p>About 25 minutes, if it were real.</p></details>
+      <details id="faq-04"><summary>What kinds of questions are asked?</summary><p>Questions about sleep, social contact, work, free time, and mood.</p></details>
+      <details id="faq-05"><summary>Is my information private?</summary><p>A real study would explain its privacy protections here. This page records only browsing actions, never anything you type.</p></details>
+      <details id="faq-06"><summary>Can I stop partway through?</summary><p>Yes. You could stop at any time without giving a reason.</p></details>
+      <details id="faq-07"><summary>Is there a thank-you gift?</summary><p>[Placeholder: thank-you gift details.]</p></details>
+      <details id="faq-08"><summary>Do I need special equipment?</summary><p>No special equipment would be needed.</p></details>
+      <details id="faq-09"><summary>Who runs the study?</summary><p>[Placeholder: study team.] This is a class project, not real research.</p></details>
+      <details id="faq-10"><summary>How will the answers be used?</summary><p>Answers would be looked at as a group to find patterns.</p></details>
+    </section>
+
+    <section class="sec" id="participate">
+      <h2>Participate</h2>
+      <p>Thank you for your interest. Choose one of the three ways to take part below.</p>
+      <!-- site.js fills this with the three cards in a random order. -->
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <section class="sec" id="contact">
+      <h2>Contact</h2>
+      <p>Questions? In a real study you could reach the team here.</p>
+      <p class="fake">Phone: 555-0100 · Email: [contact info]</p>
+    </section>
   </main>
+  <footer>This is a fake study created for a class project. No real survey will be conducted.</footer>
+
+  <!-- Shown when the device fails the desktop check. Nothing is recorded. -->
+  <div class="overlay" id="nodesktop" hidden>
+    <div class="dialog">
+      <h2>Please use a laptop or desktop</h2>
+      <p>This class project watches mouse movement, so it needs a mouse or trackpad and a browser
+        window at least <span id="minsize"></span> pixels. Nothing has been recorded.</p>
+      <p class="muted" id="cursize"></p>
+    </div>
+  </div>
+
+  <!-- Notice screen: recording starts only after "I agree, start". -->
+  <div class="overlay" id="notice" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
+      <h2 id="noticeTitle">Before you start</h2>
+      <p id="noticeText"></p>
+      <div class="row"><button class="btn" id="agree" type="button">I agree, start</button></div>
+    </div>
+  </div>
+
+  <!-- Role-play screen: only with ?rp=1. -->
+  <div class="overlay" id="roleplay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="rpTitle">
+      <h2 id="rpTitle">Your role for this visit</h2>
+      <p id="rpVisit" class="muted"></p>
+      <p>Please browse the site and choose as this person would:</p>
+      <p class="persona" id="rpPersona"></p>
+      <div class="row"><button class="btn" id="rpStart" type="button">Start browsing</button></div>
+    </div>
+  </div>
+
+  <!-- Thank-you overlay after a choice. -->
+  <div class="overlay" id="thanks" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="thanksTitle">
+      <h2 id="thanksTitle">Thanks!</h2>
+      <p>Thanks! This is a class project, so no survey will follow.</p>
+      <p class="muted" id="sendStatus"></p>
+      <div class="row">
+        <button class="btn ghost" id="download" type="button" hidden>Download my recording</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./site/site.js"></script>
 </body>
 </html>

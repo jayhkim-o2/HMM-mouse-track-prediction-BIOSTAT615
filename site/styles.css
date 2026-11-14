@@ -1,5 +1,74 @@
-/* Placeholder styles. The real palette and layout come in checkpoint step 3. */
-body { margin: 0; font-family: system-ui, sans-serif; color: #1d2733; background: #fbfaf7; }
-.banner { position: fixed; top: 0; left: 0; right: 0; padding: 0.5rem 1rem;
-  background: #2f4858; color: #fff; text-align: center; font-size: 0.95rem; }
-main { max-width: 48rem; margin: 4rem auto; padding: 0 1rem; }
+/* Lakeshore Daily Life Study: its own palette (deep teal and sand), system fonts only.
+   No web fonts or images, so the layout doesn't shift after load
+   (the recorder measures where things are on the page). */
+:root {
+  --bg: #f6f8f9;
+  --surface: #ffffff;
+  --ink: #1d2b36;
+  --muted: #5a6773;
+  --line: #d3dbe1;
+  --lake: #1e5f74;
+  --focus: #c97d10;
+  --banner: #fff3d6;
+  --banner-ink: #5c4300;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-padding-top: 110px; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6; font-size: 17px;
+}
+
+/* Banner + header stay at the top while scrolling. */
+.top { position: sticky; top: 0; z-index: 50; }
+.banner { background: var(--banner); color: var(--banner-ink); text-align: center;
+  font-size: 0.88rem; font-weight: 600; padding: 6px 12px; }
+header.site { background: var(--surface); border-bottom: 1px solid var(--line); }
+.hwrap { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 28px; }
+.word { font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: 1.35rem; color: var(--lake); }
+.word small { display: block; font-family: system-ui, sans-serif; font-weight: 500; font-size: 0.78rem; color: var(--muted); }
+nav a { color: var(--ink); text-decoration: none; margin-left: 22px; font-weight: 500; font-size: 0.95rem; }
+nav a:hover { color: var(--lake); text-decoration: underline; }
+
+main { padding: 0 28px; }
+section.sec { max-width: 760px; margin: 0 auto; padding: 64px 0; border-bottom: 1px solid var(--line); }
+section.sec:last-of-type { border-bottom: 0; }
+h1, h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 700; line-height: 1.2; }
+h1 { font-size: 2.3rem; margin: 0 0 18px; }
+h2 { font-size: 1.7rem; margin: 0 0 16px; }
+p { margin: 0 0 16px; max-width: 66ch; }
+#about { min-height: 85vh; }   /* gives About enough height to be the main section on screen */
+
+/* FAQ */
+details { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; margin: 0 0 10px; }
+summary { cursor: pointer; padding: 14px 16px; font-weight: 600; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "+"; display: inline-block; width: 1.2em; color: var(--lake); font-weight: 700; }
+details[open] summary::before { content: "\2212"; }
+details p { padding: 0 16px 4px 2.2em; color: var(--muted); }
+
+/* Option cards: always one row of three (the site is desktop-only). */
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 26px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px;
+  display: flex; flex-direction: column; gap: 10px; }
+.card h3 { margin: 0; font-size: 1.1rem; }
+.card p { color: var(--muted); font-size: 0.95rem; margin: 0; flex: 1; }
+.card button, .btn { font: inherit; font-weight: 600; padding: 11px 14px; border-radius: 8px;
+  border: 2px solid var(--lake); background: var(--lake); color: var(--surface); cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--lake); }
+button:focus-visible, summary:focus-visible, nav a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+footer { text-align: center; color: var(--muted); font-size: 0.88rem; padding: 30px 20px 60px; }
+.fake { font-family: ui-monospace, Consolas, monospace; font-size: 0.95rem; }
+
+/* Overlays (notice, role-play, thank-you, desktop check) */
+.overlay { position: fixed; inset: 0; background: rgba(10, 20, 28, 0.55); z-index: 100;
+  display: flex; align-items: center; justify-content: center; padding: 20px; }
+.overlay[hidden] { display: none; }
+.dialog { background: var(--surface); max-width: 560px; border-radius: 12px; padding: 26px; border: 1px solid var(--line); }
+.dialog h2 { font-size: 1.4rem; }
+.muted { color: var(--muted); font-size: 0.92rem; }
+.persona { font-size: 1.1rem; font-weight: 600; border-left: 4px solid var(--lake); padding-left: 12px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }

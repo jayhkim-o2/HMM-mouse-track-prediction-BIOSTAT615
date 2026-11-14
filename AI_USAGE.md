@@ -60,3 +60,12 @@
   tests can catch a realistic indexing bug.
   Live check: owner first saw the old placeholder (browser cache); after a hard refresh the
   deployed `tests.html` showed all 5 PASS with the same numbers as Node.
+- 2026-11-14 (Claude Code): Prompt: "Go ahead with step 3." Agent built `site/` from the
+  prototype's layout and handlers, with SPEC fixes: the desktop check now refuses instead of
+  only warning, no web fonts (stable layout), recorder keeps only the raw log (actions belong
+  in `core/`, step 4), layout re-logged after FAQ toggles.
+  Wrong turn: the agent wrote an automated headless-Edge click-through test and tried to run
+  it on the owner's computer, which needed the command sandbox turned off. The owner declined:
+  they only care that it runs from GitHub. The agent then checked the deployed site instead,
+  and the owner did the click-through on the live URL. Lesson: ask how the owner wants
+  something verified before setting up heavy local tooling.

@@ -11,4 +11,12 @@ Choices not covered by SPEC.md, one line each with the reason.
 - 2026-11-14: `core/` and `tests/` each have a one-line `package.json` (`"type": "module"`) so Node treats their `.js` files as ES modules; browsers ignore it.
 - 2026-11-14: `createLiveForward` also has `current()` (initial distribution before any action) and `reset()`, which the demo panel will need.
 - 2026-11-14: `bruteForce` treats paths within a 1e-12 relative tolerance of the best as ties, so test 2 can check that Viterbi's path is one of the best paths.
+- 2026-11-14: The site uses system fonts only (no web fonts), so the layout doesn't shift after load while the recorder measures positions.
+- 2026-11-14: A `layout` event is also logged after every FAQ toggle, because opening a question moves every section and button below it.
+- 2026-11-14: The `layout` event also stores `scrollY` at that moment, so the converter can check its client/page coordinate shift.
+- 2026-11-14: A `mouse` sample is logged at every click, through a capture-phase listener, so the click position is in the log before the `choice` event.
+- 2026-11-14: The desktop check runs once at page load; if it fails, the visitor has to reload after resizing, which keeps the flow simple.
+- 2026-11-14: `pid` values outside `P1`–`P9` are ignored (recorded as null), so typos never create stray participant IDs.
+- 2026-11-14: Persona no-repeat is tracked per `pid` in localStorage, and restarts once all personas have been used.
+- 2026-11-14: Until sending exists (step 6), every finished visit shows "Download my recording" and stays in localStorage under `smip_pending_<visit_id>`.
 - 2026-11-14: `.gitattributes` forces LF endings on `.sh`/`.yml` files, because Windows CRLF endings make bash scripts fail.
