@@ -12,7 +12,7 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 | 3 | Mock study site + recorder + download backup | Working | Owner's live role-play visit recorded and downloaded correctly |
 | 4 | Mouse-intent module + action converter + test 7 | Working | Owner's intent model ported; 6 converter cases + stream = batch pass in Node and on live `tests.html` |
 | 5 | Live demo panel (`?demo=1`) | Working | Owner ran live `?demo=1` visits; probabilities moved sensibly |
-| 6 | Saving visits to Google Sheet | Not working | Receiver deployed and validated; first real site visit → Sheet row not yet confirmed |
+| 6 | Saving visits to Google Sheet | Working | Owner's live visit got "saved" (script replies ok only after writing rows) |
 | 7 | Simulated visitors (type 1, type 2) + recovery analysis | Not started | |
 | 8 | Researcher dashboard | Not started | |
 | 9 | Evaluation vs baselines; learned model (EM) | Not started | After checkpoint |
@@ -57,5 +57,6 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
   signed-in users (the URL redirected to a login page). Checked: GET from a logged-out client
   returns ok; invalid project code and non-JSON posts are rejected. Site now sends with a
   10 s timeout, keeps a localStorage backup until "ok", shows the download button on
-  failure, and retries pending visits on the next load. Next: owner test visit → Sheet row.
+  failure, and retries pending visits on the next load. Owner's live demo visit showed
+  "Your recording was saved." Next: step 7 (type 1 sampler + recovery analysis).
   Next: step 4 (intent + converter + test 7).

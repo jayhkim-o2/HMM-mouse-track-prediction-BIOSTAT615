@@ -126,3 +126,6 @@
   "411 Length Required". That came from the test command (`curl -X POST -L` re-POSTs on the
   redirect without a body), not from the script; rerun correctly, both bad posts were
   rejected. Then wired the site's send + backup + retry.
+  Verified: owner's live demo visit on the deployed site showed "Your recording was saved"
+  (the receiver replies ok only after writing the rows). Owner asked to confirm the row in
+  the Sheet.
