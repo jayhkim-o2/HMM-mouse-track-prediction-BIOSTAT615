@@ -41,12 +41,63 @@ References:
 - Freeman, J. B., & Ambady, N. (2010). MouseTracker: Software for studying real-time mental
   processing using a computer mouse-tracking method. *Behavior Research Methods*, 42(1), 226–241.
 
-## How to use it *(coming)*
+## How to use it
 
-1. Open the live site on a laptop or desktop and click **"I agree, start"**.
-2. Browse the About, FAQ and Participate sections, then pick a mode.
-3. Add `?demo=1` to the URL to see the live estimate panel (demo visits aren't analyzed).
-4. Open `/dashboard/` to look at recorded and simulated visits.
+### A visit
+
+1. Open the live site on a laptop or desktop (it needs a mouse or trackpad and a window of
+   at least 1024 × 650; otherwise it shows a message and records nothing).
+2. Read the notice and click **"I agree, start"**. Recording starts at that moment.
+3. Browse the About, FAQ and Participate sections, then click one of the three mode
+   buttons. The card order is shuffled on every visit.
+4. The thank-you box says "Your recording was saved" once the visit reaches the Google
+   Sheet. If saving fails, a **Download my recording** button appears instead, and the
+   visit is retried automatically the next time the site is opened in that browser.
+
+Closing the tab before choosing throws the visit away; nothing is sent.
+
+### URL options
+
+Add these to the end of the site address (combine them with `&`):
+
+| Option | What it does |
+|---|---|
+| `?pid=P2` | Tags the visit with a participant code (`P1`–`P9`; anything else is ignored). |
+| `?rp=1` | Role-play mode: after "I agree", the visitor is shown a persona and asked to choose as that person would. |
+| `?demo=1` | Shows the live model panel. Demo visits are marked `mode: "demo"` and left out of all analysis. |
+
+Every visit is recorded with a `mode` of `natural`, `roleplay` or `demo`.
+
+### Role-play visits with volunteers
+
+Give each volunteer one link with their code, and have them use it for every visit:
+
+```
+https://jayhkim-o2.github.io/HMM-mouse-track-prediction-BIOSTAT615/?rp=1&pid=P2
+```
+
+You don't assign personas yourself. On each visit the site picks one at random from the list
+in `core/config.js` (`PERSONAS`), skipping ones that browser has already shown to that `pid`,
+and starts over once all have been used. The screen reads, for example: *"Participant P2,
+visit 3. Please browse the site and choose as this person would: A retiree who prefers
+talking to a person."* The visit records `pid` and `persona_id` (e.g. `"retiree"`).
+
+The "already shown" list is kept in the volunteer's browser, so visits from a second device
+or a private window can repeat a persona. `persona_id` is always recorded, so you can still
+tell which persona each visit had. To change the personas, edit `PERSONAS` in
+`core/config.js`, and don't rename an `id` once real visits have used it.
+
+### Live demo
+
+Open the site with `?demo=1`. A panel in the bottom-right corner shows, after every action:
+the four hidden-state probabilities as colored bands over time, a tick for each action
+(hover to see its name), and the current guess (e.g. "60% Web / 30% AI / 10% Person").
+After the click it adds the Viterbi path as a strip and says whether the last guess was
+right. **Hide** collapses the panel.
+
+### Dashboard *(coming)*
+
+`/dashboard/` will show recorded and simulated visits.
 
 ## How correctness is checked *(coming)*
 
@@ -74,7 +125,7 @@ so a local server is required. Run the build script again after you edit anythin
 publishes `_site/` with the official GitHub Pages actions. One-time setup: in the GitHub repo,
 go to **Settings → Pages → Source: GitHub Actions**.
 
-## Google Sheet setup (Apps Script) *(coming)*
+## Google Sheet setup (Apps Script)
 
 1. Create a Google Sheet. Use an account that can publish public web apps; some university
    Google accounts only allow "Anyone within [university]", which blocks visitors.
