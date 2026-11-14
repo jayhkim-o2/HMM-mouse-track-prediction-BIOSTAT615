@@ -7,7 +7,7 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 
 | # | Step | Status | Note |
 |---|------|--------|------|
-| 1 | Repo setup, docs, GitHub Pages deploy | Not started | |
+| 1 | Repo setup, docs, GitHub Pages deploy | Working | Live URL loads; Actions deploy succeeds |
 | 2 | HMM core (forward, log forward, Viterbi, brute force) + tests 1, 2, 4, 5 | Not started | Working in prototype; porting to `core/` |
 | 3 | Mock study site + recorder + download backup | Not started | Working in prototype |
 | 4 | Mouse-intent module + action converter + test 7 | Not started | |
@@ -20,9 +20,12 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 
 ## Questions for the instructor (checkpoint doc, Section 2)
 
-- (add as they come up)
+- Is a placeholder `/dashboard/` page acceptable until step 8, or should the React build exist from the start?
 
 ## Work log
 
 - 2026-11-14: Project folder set up with SPEC.md, CLAUDE.md, agent skill and prototypes.
-- 2026-11-14: Owner set Pages source to GitHub Actions; deploy ran and the live URL loads. Step 1 marked Working.
+- 2026-11-14: Step 1. Added folder skeleton (SPEC Sec. 4), README, `scripts/build-pages.sh` and
+  `.github/workflows/deploy.yml`. Tested: build script produces the expected `_site/` locally;
+  owner set Pages source to GitHub Actions, the deploy ran and the live URL loads. Fixed doc
+  updates that had silently not been applied (see AI_USAGE). Next: step 2 (HMM core + tests).

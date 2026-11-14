@@ -12,7 +12,8 @@
   (`tests.html`, the live site, `?demo=1`) before moving on.
 
 ## Division of labor
-(fill in as the project goes)
+- Owner: writes the spec and makes the decisions, does browser setup (GitHub Pages, Apps Script), tests by hand.
+- Agent: writes code, scripts and docs one step at a time, and runs local checks.
 
 ## Verification
 (fill in: which tests, hand-checked example, brute-force comparison, Python cross-check)
@@ -30,4 +31,16 @@
 - 2026-11-14: Proof-of-concept page with the full 4-state HMM; in-browser checks (hand-worked
   example, brute force on 500 random models, 2,000-step underflow test) all pass. Set up repo
   folder, CLAUDE.md and agent skill.
-  Follow-up: owner enabled Pages and confirmed the live page loads and the Actions run succeeds.
+- 2026-11-14 (Claude Code): Prompt: "Use the survey-mode-builder skill. Read SPEC.md, then do
+  checkpoint step 1: repo skeleton, README, and the GitHub Pages deploy workflow. Update
+  PROGRESS.md and AI_USAGE.md, then commit and push." Produced: SPEC Sec. 4 folders with
+  placeholders, README, a shared `scripts/build-pages.sh` (used by CI and local preview), and
+  `.github/workflows/deploy.yml`. Verified: build script output checked locally; owner enabled
+  Pages and confirmed the live page loads and the Actions run succeeds.
+  [EPISODE] Failure: the agent updated the docs with a `python` script, but on this Windows
+  machine `python` was the Microsoft Store stub, which printed "Python" and did nothing. The
+  agent missed this and reported the docs as updated, so the first commit shipped with
+  PROGRESS/DECISIONS/AI_USAGE unchanged. Caught when the next edit showed the step 1 row still
+  "Not started". Fixed by redoing the edits with the editor tool and checking the file
+  contents. Lesson: after any edit made by a script, check the file itself, not just that the
+  command ran.
