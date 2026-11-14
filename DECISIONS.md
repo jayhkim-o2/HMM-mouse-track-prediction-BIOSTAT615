@@ -42,4 +42,5 @@ Choices not covered by SPEC.md, one line each with the reason.
 - 2026-11-14: The receiver formats new cells as plain text before writing, so Sheets never turns a JSON chunk into a number or date.
 - 2026-11-14: The site retries any `smip_pending_*` visits on the next page load, so a visit whose send failed still reaches the Sheet later.
 - 2026-11-14: The Apps Script URL is committed in `config.js`; it's write-only (anyone can POST a valid visit, nobody can read the Sheet through it), and the site has to know it anyway.
+- 2026-11-14: Owner said "deletion after 1 year"; the notice uses a fixed date, December 17, 2027 (one year after the final submission), because visitors need a concrete date. `CONFIG_VERSION` bumped to 3.
 - 2026-11-14: `.gitattributes` forces LF endings on `.sh`/`.yml` files, because Windows CRLF endings make bash scripts fail.

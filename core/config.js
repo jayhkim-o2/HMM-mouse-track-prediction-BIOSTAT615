@@ -3,7 +3,7 @@
 
 export const CONFIG = {
   // Bump this whenever a value below changes; every visit records it.
-  CONFIG_VERSION: 2,        // v2: PAUSE_MS 10000 -> 3000 (owner, 2026-11-14)
+  CONFIG_VERSION: 3,        // v2: PAUSE_MS 10000 -> 3000; v3: notice placeholders filled (2026-11-14)
 
   // --- Turning raw events into actions (SPEC Section 6.2) ---
   SECTION_DWELL_MS: 2000,   // a section must fill most of the screen this long to count as viewed
@@ -45,9 +45,9 @@ export const CONFIG = {
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbygutUgsi9fiNWfFyes4gj-jA0fLnBfWeReQKQQFnVm2FFyJk5i61lkzDMqrA65BFFx/exec",
 
   // --- Notice placeholders (fill in before real visits) ---
-  COURSE: "[COURSE]",
-  OWNER: "[OWNER]",
-  DELETION_DATE: "[DELETION DATE]",
+  COURSE: "BIOSTAT 615",
+  OWNER: "Jay Kim",
+  DELETION_DATE: "December 17, 2027",   // one year after the final submission
 
   // --- Role-play personas (SPEC Section 9.3); edit freely ---
   PERSONAS: [

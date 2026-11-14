@@ -89,10 +89,17 @@ go to **Settings → Pages → Source: GitHub Actions**.
 6. After changing the script later: **Deploy → Manage deployments → edit → Version: New
    version → Deploy**. The URL stays the same; an un-redeployed edit is not live.
 
-## Placeholders to fill in
+## Notice placeholders
 
-These are set in `core/config.js` and appear in the visitor notice:
-`[COURSE]`, `[OWNER]`, `[DELETION DATE]`.
+The visitor notice (SPEC Section 5.1) has three placeholders, set in `core/config.js`:
+
+| Placeholder | Current value |
+|---|---|
+| `[COURSE]` | BIOSTAT 615 |
+| `[OWNER]` | Jay Kim |
+| `[DELETION DATE]` | December 17, 2027 (one year after the final submission) |
+
+If you reuse this project, change these three values first.
 
 ## Credits and license
 
