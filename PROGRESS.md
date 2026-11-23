@@ -5,18 +5,22 @@ Repository: https://github.com/jayhkim-o2/HMM-mouse-track-prediction-BIOSTAT615
 
 ## Steps and status (checkpoint doc, Section 1)
 
+The project: a fake survey-study website that watches how a visitor browses and predicts,
+live, which of three ways (web survey, AI phone call, call with a person) they will choose
+to take part, using a hidden Markov model (HMM).
+
 | # | Step | Status | Note |
 |---|------|--------|------|
-| 1 | Repo setup, docs, GitHub Pages deploy | Working | Live URL loads; Actions deploy succeeds |
-| 2 | HMM core (forward, log forward, Viterbi, brute force) + tests 1, 2, 4, 5 | Working | All 5 pass in Node and on live `tests.html` |
-| 3 | Mock study site + recorder + download backup | Working | Owner's live role-play visit recorded and downloaded correctly |
-| 4 | Mouse-intent module + action converter + test 7 | Working | Owner's intent model ported; 6 converter cases + stream = batch pass in Node and on live `tests.html` |
-| 5 | Live demo panel (`?demo=1`) | Working | Owner ran live `?demo=1` visits; probabilities moved sensibly |
-| 6 | Saving visits to Google Sheet | Working | Owner's live visit got "saved" (script replies ok only after writing rows) |
-| 7 | Simulated visitors (type 1, type 2) + recovery analysis | Not started | |
-| 8 | Researcher dashboard | Not started | |
-| 9 | Evaluation vs baselines; learned model (EM) | Not started | After checkpoint |
-| 10 | README, report, video | Not started | After checkpoint |
+| 1 | Project setup: code repository, documentation, and automatic publishing of the website on every update | Working | Site is live at the URL above; each update re-runs the tests and republishes |
+| 2 | Prediction math: the HMM that updates the guess after each visitor action, plus correctness tests | Working | All tests pass, including a hand-worked example and a check against listing every possible path |
+| 3 | Mock study website that records browsing (scrolling, clicks, mouse movement) after the visitor agrees | Working | A real test visit was recorded correctly and could be downloaded as a file |
+| 4 | Turning raw mouse/scroll data into a short list of meaningful actions (e.g. "paused", "moved toward the Web button") | Working | Hand-made test cases all give the expected actions |
+| 5 | Live demo view: a panel on the site showing the prediction changing as you browse | Working | Tested on the live site; the prediction moved sensibly toward the chosen option |
+| 6 | Saving each finished visit to a Google Sheet, with a download backup if saving fails | Working | A visit from the live site was saved to the Sheet |
+| 7 | Simulated visitors, used to check that the model recovers what it should | Not started | |
+| 8 | Researcher dashboard to view each visit and how the prediction changed over time | Not started | |
+| 9 | Comparing the HMM with simpler prediction methods; learning model settings from data | Not started | Planned after the checkpoint |
+| 10 | Final report and video | Not started | Planned after the checkpoint |
 
 ## Questions for the instructor (checkpoint doc, Section 2)
 
