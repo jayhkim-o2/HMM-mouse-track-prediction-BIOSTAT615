@@ -19,7 +19,7 @@ to take part, using a hidden Markov model (HMM).
 | 6 | Saving each finished visit to a Google Sheet, with a download backup if saving fails | Working | A visit from the live site was saved to the Sheet |
 | 7 | Simulated visitors, used to check that the model recovers what it should | Not started | |
 | 8 | Researcher dashboard to view each visit and how the prediction changed over time | Not started | |
-| 9 | Comparing the HMM with simpler prediction methods; learning model settings from data | Not started | Planned after the checkpoint |
+| 9 | Checking whether the HMM beats simpler guesses (random, most common choice, nearest button, mouse direction alone), and fitting the HMM's probabilities from visit data | Not started | Planned after the checkpoint |
 | 10 | Final report and video | Not started | Planned after the checkpoint |
 
 ## Questions for the instructor (checkpoint doc, Section 2)
